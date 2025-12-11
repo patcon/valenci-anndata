@@ -1,6 +1,5 @@
-from valenci_anndata import polis
+import valenci_anndata as val
 
-adata = polis.load("https://pol.is/report/r2dfw8eambusb8buvecjt")
-# adata = polis.load("https://pol.is/3ntrtcehas")
-
+adata = val.datasets.polis("https://pol.is/report/r2dfw8eambusb8buvecjt")
+# adata = val.datasets.polis("https://pol.is/3ntrtcehas")
 print(adata)
