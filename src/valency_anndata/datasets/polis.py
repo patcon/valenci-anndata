@@ -1,4 +1,5 @@
 import re
+from typing import Optional
 import anndata as ad
 import pandas as pd
 from dataclasses import dataclass
@@ -145,6 +146,8 @@ def polis(source: str, *, build_X: bool = True) -> ad.AnnData:
         rebuild_vote_matrix(adata, trim_rule=1.0, inplace=True)
         adata.raw = adata.copy()
 
+    _populate_var_statements(adata)
+
     # if convo_meta.conversation_id:
     #     xids = client.get_xids(conversation_id=convo_meta.conversation_id)
     #     adata.uns["xids"] = pd.DataFrame(xids)
@@ -251,3 +254,22 @@ def _load_raw_polis_data(source):
     }
 
     return adata
+
+def _populate_var_statements(adata):
+    statements_aligned = adata.uns["statements"].copy()
+    statements_aligned.index = statements_aligned.index.astype(str)
+    statements_aligned = statements_aligned.reindex(adata.var_names)
+
+    adata.var["content"] = statements_aligned["txt"]
+    adata.var["participant_id_authored"] = statements_aligned["pid"]
+    adata.var["created_date"] = statements_aligned["created"]
+    adata.var["is_seed"] = statements_aligned["is_seed"]
+    adata.var["is_meta"] = statements_aligned["is_meta"]
+    adata.var["moderation_state"] = statements_aligned["mod"]
+    adata.var["language_original"] = statements_aligned["lang"]
+
+    adata.var["language_current"] = adata.var["language_original"]
+    adata.var["is_translated"] = False
+
+def populate_statements_txt(adata, translate_to: Optional[str]):
+    adata.uns["statements"]["txt"]
