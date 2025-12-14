@@ -329,7 +329,7 @@ def translate_statements(
     statements_aligned = statements_aligned.reindex(adata.var_names)
 
     original_texts = statements_aligned["txt"].tolist()
-    translated_texts = asyncio.run(_translate_texts_async(original_texts, translate_to))
+    translated_texts = run_async(_translate_texts_async(original_texts, translate_to))
 
     if inplace:
         adata.var["content"] = translated_texts
