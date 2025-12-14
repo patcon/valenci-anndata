@@ -93,6 +93,7 @@ def polis(source: str, *, build_X: bool = True) -> ad.AnnData:
 
     if build_X:
         rebuild_vote_matrix(adata, trim_rule=1.0, inplace=True)
+        adata.raw = adata.copy()
 
     # if convo_meta.conversation_id:
     #     xids = client.get_xids(conversation_id=convo_meta.conversation_id)
