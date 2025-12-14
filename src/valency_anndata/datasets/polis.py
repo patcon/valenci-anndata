@@ -77,7 +77,7 @@ def _parse_polis_source(source: str):
     raise ValueError(f"Unrecognized Polis source format: {source}")
 
 
-def polis(source: str, *, build_X: bool = True) -> ad.AnnData:
+def polis(source: str, *, translate_to: Optional[str] = None, build_X: bool = True) -> ad.AnnData:
     """
     Load a Polis conversation or report into an AnnData object.
 
@@ -98,6 +98,14 @@ def polis(source: str, *, build_X: bool = True) -> ad.AnnData:
         The function will automatically parse the source to determine whether
         it refers to a conversation or report and fetch the appropriate data.
 
+
+    translate_to : str or None, optional
+        Target language code (e.g., "en", "fr", "es") for translating statement text.
+        If provided, the original statement text in `adata.uns["statements"]["txt"]`
+        is translated and stored in `adata.var["content"]`. The `adata.var["language_current"]`
+        field is updated to the target language, and `adata.var["is_translated"]` is set to True.
+        Defaults to None (no translation).
+
     build_X : bool, default True
         If True, constructs a participant × statement vote matrix from the raw votes
         using `rebuild_vote_matrix()`. This populates `adata.X`, `adata.obs`, and `adata.var`.
@@ -107,7 +115,7 @@ def polis(source: str, *, build_X: bool = True) -> ad.AnnData:
     -------
     adata : anndata.AnnData
         An AnnData object containing the loaded Polis data.
-        
+
         Attributes populated:
         - `adata.uns["votes"]` : pd.DataFrame
             Raw vote events fetched from the API or CSV export.
@@ -137,6 +145,8 @@ def polis(source: str, *, build_X: bool = True) -> ad.AnnData:
       votes and statements, and `.X`, `.obs`, `.var`, and `.raw` will remain empty.
     - `adata.raw` is assigned only after the first vote matrix build and is intended
       to be immutable.
+    - If `translate_to` is provided, `adata.var["content"]` is updated with translated
+    text and `adata.var["language_current"]` is set to the target language.
     - The vote matrix is derived from the most recent votes per participant per statement,
       sorted by timestamp.
     """
@@ -146,7 +156,7 @@ def polis(source: str, *, build_X: bool = True) -> ad.AnnData:
         rebuild_vote_matrix(adata, trim_rule=1.0, inplace=True)
         adata.raw = adata.copy()
 
-    _populate_var_statements(adata)
+    _populate_var_statements(adata, translate_to=translate_to)
 
     # if convo_meta.conversation_id:
     #     xids = client.get_xids(conversation_id=convo_meta.conversation_id)
@@ -255,7 +265,7 @@ def _load_raw_polis_data(source):
 
     return adata
 
-def _populate_var_statements(adata):
+def _populate_var_statements(adata, translate_to: Optional[str] = None):
     statements_aligned = adata.uns["statements"].copy()
     statements_aligned.index = statements_aligned.index.astype(str)
     statements_aligned = statements_aligned.reindex(adata.var_names)
@@ -271,5 +281,57 @@ def _populate_var_statements(adata):
     adata.var["language_current"] = adata.var["language_original"]
     adata.var["is_translated"] = False
 
-def populate_statements_txt(adata, translate_to: Optional[str]):
+    if translate_to is not None:
+        translate_statements(adata, translate_to=translate_to, inplace=True)
+
+def populate_statements_txt(adata, translate_to: Optional[str] = None):
     adata.uns["statements"]["txt"]
+
+from googletrans import Translator
+import asyncio
+
+async def _translate_texts(texts: list[str], dest_lang: str) -> list[str]:
+    async with Translator() as translator:
+        results = await asyncio.gather(
+            *(translator.translate(t, dest=dest_lang) for t in texts)
+        )
+    return [r.text for r in results]
+
+def translate_statements(
+    adata: ad.AnnData,
+    translate_to: str,
+    inplace: bool = True
+) -> Optional[list[str]]:
+    """
+    Translate statements in `adata.uns['statements']['txt']` into another language,
+    and optionally update `adata.var['content']` and `adata.var['language_current']`.
+
+    Parameters
+    ----------
+    adata : AnnData
+        AnnData object containing `uns['statements']` and `var_names`.
+    translate_to : str
+        Target language code (e.g., "en", "fr", "es").
+    inplace : bool, default True
+        If True, updates `adata.var['content']` and `adata.var['language_current']`.
+        If False, returns a list of translated strings without modifying `adata`.
+
+    Returns
+    -------
+    translated_texts : list[str] | None
+        List of translated texts if `inplace=False`, else None.
+    """
+    statements_aligned = adata.uns["statements"].copy()
+    statements_aligned.index = statements_aligned.index.astype(str)
+    statements_aligned = statements_aligned.reindex(adata.var_names)
+
+    original_texts = statements_aligned["txt"].tolist()
+    translated_texts = asyncio.run(_translate_texts(original_texts, translate_to))
+
+    if inplace:
+        adata.var["content"] = translated_texts
+        adata.var["language_current"] = translate_to
+        adata.var["is_translated"] = True
+        return None
+    else:
+        return translated_texts
