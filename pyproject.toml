@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Patrick Connolly", email = "patrick.c.connolly@gmail.com" }
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 dependencies = [
     "anndata>=0.11.4",
     "googletrans>=4.0.2",
