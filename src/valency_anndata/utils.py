@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import asyncio
-import functools
 from typing import Any, Coroutine
 
 
