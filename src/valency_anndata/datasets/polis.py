@@ -302,18 +302,18 @@ def translate_texts(texts: List[str], dest_lang: str) -> List[str]:
 
 def translate_statements(
     adata: ad.AnnData,
-    translate_to: str,
+    translate_to: Optional[str],
     inplace: bool = True
 ) -> Optional[list[str]]:
     """
     Translate statements in `adata.uns['statements']['txt']` into another language,
-    and optionally update `adata.var['content']` and `adata.var['language_current']`.
+    or copy originals if translate_to is None.
 
     Parameters
     ----------
     adata : AnnData
         AnnData object containing `uns['statements']` and `var_names`.
-    translate_to : str
+    translate_to : Optional[str]
         Target language code (e.g., "en", "fr", "es").
     inplace : bool, default True
         If True, updates `adata.var['content']` and `adata.var['language_current']`.
@@ -329,7 +329,26 @@ def translate_statements(
     statements_aligned = statements_aligned.reindex(adata.var_names)
 
     original_texts = statements_aligned["txt"].tolist()
-    translated_texts = run_async(_translate_texts_async(original_texts, translate_to))
+
+    # ───────────────────────────────────────────
+    # NO-TRANSLATION PATH (explicit)
+    # ───────────────────────────────────────────
+    if translate_to is None:
+        if inplace:
+            adata.var["content"] = original_texts
+            adata.var["language_current"] = adata.var["language_original"]
+            adata.var["is_translated"] = False
+            return None
+        else:
+            return original_texts
+
+
+    # ───────────────────────────────────────────
+    # TRANSLATION PATH
+    # ───────────────────────────────────────────
+    translated_texts = run_async(
+        _translate_texts_async(original_texts, translate_to)
+    )
 
     if inplace:
         adata.var["content"] = translated_texts
