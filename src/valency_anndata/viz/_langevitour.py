@@ -107,11 +107,31 @@ def resolve_use_reps(
 
         n_actual = X.shape[1]
 
-        cols = [f"{key}_{i+1}" for i in range(n_actual)]
+        cols = [format_rep_column(key, i + 1) for i in range(n_actual)]
         df = pd.DataFrame(X, index=adata.obs_names, columns=pd.Index(cols))
         dfs.append(df)
 
     return pd.concat(dfs, axis=1)
+
+def format_rep_column(rep_key: str, i: int) -> str:
+    """
+    Format a representation column name for display.
+
+    Examples
+    --------
+    X_pca, 1   -> PC1   (special case)
+    X_umap, 2  -> UMAP2 (uppercased)
+    X_foo, 3   -> FOO3  (uppercased)
+    """
+    if rep_key.startswith("X_"):
+        rep_key = rep_key[2:]
+
+    rep_label = rep_key.upper()
+
+    if rep_label == "PCA":
+        rep_label = "PC"
+
+    return f"{rep_label}{i}"
 
 _REP_RE = re.compile(
     r"""
