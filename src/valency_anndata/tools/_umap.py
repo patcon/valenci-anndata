@@ -29,4 +29,4 @@ def umap( # pyright: ignore[reportInconsistentOverload]
 ) -> AnnData | None: ...
 
 def umap(adata, **kwargs) -> AnnData | None:
-    sc.tl.tsne(adata, **kwargs)
+    sc.tl.umap(adata, **kwargs)
