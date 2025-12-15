@@ -12,5 +12,6 @@ print(adata.uns["schema"])
 print(adata.var)
 
 # val.datasets.polis.translate_statements(adata, translate_to="ja")
-val.tools.pca(adata)
-print(adata.var)
+val.preprocessing.impute(adata, strategy="mean")
+val.tools.pca(adata, layer="X_imputed_mean")
+print(adata)
