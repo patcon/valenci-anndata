@@ -106,7 +106,7 @@ def resolve_use_reps(
     adata
         AnnData object.
     use_reps
-        Sequence like ["X_pca[:10]", "X_umap[:2]"].
+        Sequence like ["X_pca[:10]", "X_umap[:2]", "X_pca[0]"].
         If None, defaults to [f"{default_rep}[:{default_n_dims}]"].
     default_rep
         Representation to use if `use_reps` is None.
@@ -134,7 +134,11 @@ def resolve_use_reps(
 
         X: Matrix = adata.obsm[key]
         if n_dims is not None:
-            X = X[:, :n_dims]
+            if isinstance(n_dims, int) and n_dims < X.shape[1]:
+                # single-column slice
+                X = X[:, n_dims : n_dims + 1]
+            # if n_dims >= X.shape[1], take all columns (or leave as-is)
+            # alternatively, could raise an error for out-of-bounds
 
         n_actual = X.shape[1]
 
@@ -167,8 +171,10 @@ def format_rep_column(rep_key: str, i: int) -> str:
 _REP_RE = re.compile(
     r"""
     ^
-    (?P<key>[A-Za-z0-9_]+)      # obsm key, e.g. X_pca
-    (?:\[\s*:\s*(?P<n>\d+)\s*\])?  # optional [:N]
+    (?P<key>[A-Za-z0-9_]+)          # obsm key, e.g. X_pca
+    (?:\[\s*(?P<start>\d*)          # optional [start
+        (?::(?P<stop>\d+))?         # optional :stop
+    \s*\])?
     $
     """,
     re.VERBOSE,
@@ -177,21 +183,31 @@ _REP_RE = re.compile(
 
 def parse_rep(rep: str) -> Tuple[str, Optional[int]]:
     """
-    Parse a representation spec like 'X_pca[:10]' or 'X_umap'.
+    Parse a representation spec like 'X_pca[:10]', 'X_umap', or 'X_pca[0]'.
 
     Returns
     -------
     (key, n_dims)
         key: obsm key
-        n_dims: number of dimensions to take (None = all)
+        n_dims: number of dimensions to take (None = all) or single index
     """
     m = _REP_RE.match(rep)
     if not m:
         raise ValueError(
             f"Invalid rep specification '{rep}'. "
-            "Expected e.g. 'X_pca[:10]' or 'X_umap[:2]'."
+            "Expected e.g. 'X_pca[:10]', 'X_umap', or 'X_pca[0]'."
         )
 
     key = m.group("key")
-    n = m.group("n")
-    return key, int(n) if n is not None else None
+    start = m.group("start")
+    stop = m.group("stop")
+
+    if stop is not None:
+        # [:N] slice case
+        return key, int(stop)
+    elif start:
+        # [i] single-dim case
+        return key, int(start)
+    else:
+        # no slice, take all dims
+        return key, None
