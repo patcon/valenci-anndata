@@ -2038,6 +2038,15 @@ wheels = [
 ]
 
 [[package]]
+name = "svgwrite"
+version = "1.4.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/16/c1/263d4e93b543390d86d8eb4fc23d9ce8a8d6efd146f9427364109004fa9b/svgwrite-1.4.3.zip", hash = "sha256:a8fbdfd4443302a6619a7f76bc937fc683daf2628d9b737c891ec08b8ce524c3", size = 189516, upload-time = "2022-07-14T14:05:26.107Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/84/15/640e399579024a6875918839454025bb1d5f850bb70d96a11eabb644d11c/svgwrite-1.4.3-py3-none-any.whl", hash = "sha256:bb6b2b5450f1edbfa597d924f9ac2dd099e625562e492021d7dd614f65f8a22d", size = 67122, upload-time = "2022-07-14T14:05:24.459Z" },
+]
+
+[[package]]
 name = "texttable"
 version = "1.7.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2152,6 +2161,7 @@ dependencies = [
     { name = "red-dwarf" },
     { name = "scanpy", extra = ["leiden"] },
     { name = "setuptools" },
+    { name = "svgwrite" },
 ]
 
 [package.metadata]
@@ -2165,6 +2175,7 @@ requires-dist = [
     { name = "red-dwarf", git = "https://github.com/polis-community/red-dwarf" },
     { name = "scanpy", extras = ["leiden"] },
     { name = "setuptools", specifier = "<81" },
+    { name = "svgwrite", specifier = ">=1.4.3" },
 ]
 
 [[package]]

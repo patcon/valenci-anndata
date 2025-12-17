@@ -20,6 +20,7 @@ dependencies = [
     "langevitour>=0.8.0",
     "setuptools<81",
     "red-dwarf",
+    "svgwrite>=1.4.3",
 ]
 
 [build-system]
