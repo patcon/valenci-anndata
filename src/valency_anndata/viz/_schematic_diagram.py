@@ -267,7 +267,7 @@ def adata_structure_svg(adata: AnnData):
         height=X_height,
         rows=obs_cells,
         cols=var_cells,
-        label=f"X\n{adata.n_obs} × {adata.n_vars}",
+        label=f"X\n{adata.n_obs} x {adata.n_vars}",
         stroke="#2ecc71",
     )
 
@@ -287,7 +287,7 @@ def adata_structure_svg(adata: AnnData):
         height=X_height,
         rows=obs_cells,
         cols=1,
-        label=f"obs\n{adata.n_obs} × {adata.obs.shape[1]}",
+        label=f"obs\n{adata.n_obs} x {adata.obs.shape[1]}",
         stroke="#3498db",
     )
 
@@ -319,7 +319,7 @@ def adata_structure_svg(adata: AnnData):
         height=var_block_height,
         rows=1,
         cols=var_cells,
-        label=f"var\n{adata.n_vars} × {adata.var.shape[1]}",
+        label=f"var\n{adata.n_vars} x {adata.var.shape[1]}",
         stroke="#9b59b6",
     )
 
