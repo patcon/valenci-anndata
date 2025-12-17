@@ -261,12 +261,18 @@ def adata_structure_svg(adata: AnnData):
     needed_obs_width = len(obs_keys) * obs_key_spacing
     obs_width = max(min_obs_width, needed_obs_width)
 
+    # Add extra padding for the last key's approximate width (character count * font size)
+    font_size = 12
+    tilt_factor = 0.707  # sin/cos 45°
+    last_key_extra = len(obs_keys[-1]) * (font_size * 0.5) * tilt_factor if obs_keys else 0
+    extra_canvas_padding = last_key_extra + 10
+
     # -------------------
     # Canvas size (expand width to fit rotated obs keys)
     # -------------------
     x0 = pad + 120
     y0 = pad + var_block_height + 30
-    canvas_width = x0 + X_width + 30 + obs_width + 20  # extra 20px padding
+    canvas_width = x0 + X_width + 30 + obs_width + extra_canvas_padding
     canvas_height = X_height + var_block_height + 150
 
     dwg = svgwrite.Drawing(
@@ -314,7 +320,7 @@ def adata_structure_svg(adata: AnnData):
             dwg.text(
                 key,
                 insert=(x, baseline_y),
-                font_size=12,
+                font_size=font_size,
                 font_family="sans-serif",
                 text_anchor="start",
                 transform=f"rotate(-45,{x},{baseline_y})",
@@ -366,7 +372,7 @@ def _show_svg(dwg):
     svg_text = dwg.tostring()
     if _display_svg_in_notebook(svg_text):
         return
-    
+
     # Otherwise, assume script mode → open in default browser
     import webbrowser
     with tempfile.NamedTemporaryFile(suffix=".svg", delete=False, mode="w") as f:
