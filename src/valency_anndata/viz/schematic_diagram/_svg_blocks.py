@@ -21,7 +21,8 @@ def draw_grid_block(
         dwg.rect(
             insert=(x, y),
             size=(width, height),
-            fill="none",
+            fill="white",
+            fill_opacity=0.9,
             stroke=stroke,
             stroke_width=2,
         )
