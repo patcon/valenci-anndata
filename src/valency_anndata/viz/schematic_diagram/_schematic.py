@@ -13,6 +13,16 @@ LAYER_Y_OFFSET = 16   # vertical shift per layer
 LAYER_LABEL_Y_SPACING = 4  # additional vertical space for layer labels
 FONT_SIZE = 12
 
+COLORS = {
+    "X": "#4fba6f",
+    "layers": "#4fba6f",
+    "obs": "#efc41c",
+    "var": "#2c96c0",
+    "obsm": "#ef9021",
+    "varm": "#194c61",
+    "varp": "#965ba5",
+    "obsp": "#f15c5a",
+}
 
 def draw_layer_rect(
     dwg, x0, y0, cell, layer_index, layer_name, n_rows, n_cols, color="#e67e22", status: str | None = None
@@ -222,7 +232,7 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
             layer_name=layer_name,
             n_rows=layer_rows,
             n_cols=layer_cols,
-            color="#e67e22",  # outline color unchanged
+            color=COLORS["layers"],  # outline color unchanged
             status=layer_status.get(layer_name),
         )
 
@@ -238,7 +248,7 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
         rows=obs_cells,
         cols=var_cells,
         label=f"X\n{adata.n_obs} x {adata.n_vars}",
-        stroke="#2ecc71",
+        stroke=COLORS["X"],
     )
 
     # -------------------
@@ -253,7 +263,7 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
         rows=obs_cells,
         cols=1,
         label=f"obs\n{adata.n_obs} x {adata.obs.shape[1]}",
-        stroke="#3498db",
+        stroke=COLORS["obs"],
     )
 
     # -------------------
@@ -288,7 +298,7 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
         rows=1,
         cols=var_cells,
         label=f"var\n{adata.n_vars} x {adata.var.shape[1]}",
-        stroke="#9b59b6",
+        stroke=COLORS["var"],
     )
 
     # -------------------
