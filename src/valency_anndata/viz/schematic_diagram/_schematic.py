@@ -14,9 +14,12 @@ LAYER_LABEL_Y_SPACING = 4  # additional vertical space for layer labels
 FONT_SIZE = 12
 
 
-def draw_layer_rect(dwg, x0, y0, cell, layer_index, layer_name, n_rows, n_cols, color="#e67e22"):
+def draw_layer_rect(
+    dwg, x0, y0, cell, layer_index, layer_name, n_rows, n_cols, color="#e67e22", status: str | None = None
+):
     """
-    Draw a single layer as a flat rectangle behind X.
+    Draw a single layer as a flat rectangle behind X, optionally coloring
+    the label based on diff status.
 
     Parameters
     ----------
@@ -33,18 +36,20 @@ def draw_layer_rect(dwg, x0, y0, cell, layer_index, layer_name, n_rows, n_cols, 
         Rows and columns of the layer
     color : str
         Outline color
+    status : str | None
+        Optional diff status for the layer label ('added', 'removed', or None)
     """
     width = n_cols * cell
     height = n_rows * cell
 
-    # Apply configurable shifts
+    # Apply configurable shifts for depth
     x_shift = LAYER_X_OFFSET * (layer_index + 1)
     y_shift = LAYER_Y_OFFSET * (layer_index + 1)
 
     rect_x = x0 + x_shift
     rect_y = y0 + y_shift
 
-    # Rectangle behind
+    # Draw rectangle behind X
     dwg.add(
         dwg.rect(
             insert=(rect_x, rect_y),
@@ -57,13 +62,14 @@ def draw_layer_rect(dwg, x0, y0, cell, layer_index, layer_name, n_rows, n_cols, 
 
     # Label at inside bottom edge
     label_y = rect_y + height - LAYER_LABEL_Y_SPACING
+    label_style = diff_text_style(status)
     dwg.add(
         dwg.text(
             layer_name,
             insert=(rect_x + 5, label_y),
             font_size=FONT_SIZE,
             font_family="sans-serif",
-            fill="black",
+            **label_style,
         )
     )
 
@@ -71,19 +77,35 @@ def draw_layer_rect(dwg, x0, y0, cell, layer_index, layer_name, n_rows, n_cols, 
 # AnnData → SVG with diff
 # ------------------------------------------------------------
 def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
+    """
+    Render a schematic SVG of an AnnData object, optionally highlighting
+    differences in .obs, .var, and .layers relative to a snapshot.
+
+    Parameters
+    ----------
+    adata : AnnData
+        The AnnData object to visualize.
+    diff_from : AnnData | None
+        Optional snapshot to compare against for highlighting differences.
+
+    Returns
+    -------
+    svgwrite.Drawing
+        The generated SVG drawing.
+    """
     cell = 18
     max_cells = 10
     pad = 40
     line_height = 14
     obs_key_spacing = 15  # horizontal spacing between rotated keys
 
+    # -------------------
+    # Determine obs/var keys and order
+    # -------------------
     if diff_from is not None:
-        # Start with the original order from diff_from
         obs_keys = list(diff_from.obs.keys())
-        # Add any new keys that appear in adata but not in diff_from
         obs_keys += [k for k in adata.obs.keys() if k not in obs_keys]
 
-        # Similarly for var keys
         var_keys = list(diff_from.var.keys())
         var_keys += [k for k in adata.var.keys() if k not in var_keys]
     else:
@@ -91,10 +113,11 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
         var_keys = list(adata.var.keys())
 
     # -------------------
-    # Determine diff sets
+    # Compute diff status for obs and var
     # -------------------
     obs_status: dict[str, str] = {}
     var_status: dict[str, str] = {}
+    layer_status: dict[str, str] = {}
 
     if diff_from is not None:
         obs_prev = set(diff_from.obs.keys())
@@ -110,6 +133,16 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
             var_status[key] = "added"
         for key in var_prev - var_now:
             var_status[key] = "removed"
+
+        # -------------------
+        # Compute diff status for layers
+        # -------------------
+        layer_prev = set(diff_from.layers.keys())
+        layer_now = set(adata.layers.keys())
+        for key in layer_now - layer_prev:
+            layer_status[key] = "added"
+        for key in layer_prev - layer_now:
+            layer_status[key] = "removed"
 
     # -------------------
     # Determine matrix size
@@ -144,17 +177,41 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
     layer_height_total = num_layers * 20 + num_layers * cell * max_cells  # rough estimate
     canvas_height = X_height + var_block_height + 150 + layer_height_total
 
-    dwg = svgwrite.Drawing(
-        size=(canvas_width, canvas_height),
-        profile="full",
-    )
+    dwg = svgwrite.Drawing(size=(canvas_width, canvas_height), profile="full")
 
     # -------------------
-    # Layers (stacked behind X)
+    # Layers (stacked behind X, preserve order for removals)
     # -------------------
-    for i, (layer_name, layer_data) in reversed(list(enumerate(adata.layers.items()))):
-        layer_rows = min(max_cells, math.ceil(math.sqrt(layer_data.shape[0])))
-        layer_cols = min(max_cells, math.ceil(math.sqrt(layer_data.shape[1])))
+    all_layer_names = []
+    if diff_from is not None:
+        # Combine layers from diff_from and current adata while preserving order
+        for ln in diff_from.layers.keys():
+            if ln in adata.layers:
+                all_layer_names.append(ln)
+            else:
+                all_layer_names.append(ln)  # removed layer
+        for ln in adata.layers.keys():
+            if ln not in all_layer_names:
+                all_layer_names.append(ln)
+    else:
+        all_layer_names = list(adata.layers.keys())
+
+    for i, layer_name in reversed(list(enumerate(all_layer_names))):
+        layer_data = adata.layers.get(layer_name, None)
+
+        if layer_data is not None:
+            # Existing layer → use actual shape
+            layer_rows = min(max_cells, math.ceil(math.sqrt(layer_data.shape[0])))
+            layer_cols = min(max_cells, math.ceil(math.sqrt(layer_data.shape[1])))
+        else:
+            # Removed layer → use shape from diff_from
+            removed_data = diff_from.layers.get(layer_name)
+            if removed_data is not None:
+                layer_rows = min(max_cells, math.ceil(math.sqrt(removed_data.shape[0])))
+                layer_cols = min(max_cells, math.ceil(math.sqrt(removed_data.shape[1])))
+            else:
+                # Fallback (very unlikely)
+                layer_rows = layer_cols = max_cells
 
         draw_layer_rect(
             dwg,
@@ -165,7 +222,8 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
             layer_name=layer_name,
             n_rows=layer_rows,
             n_cols=layer_cols,
-            color="#e67e22",  # outline color
+            color="#e67e22",  # outline color unchanged
+            status=layer_status.get(layer_name),
         )
 
     # -------------------
