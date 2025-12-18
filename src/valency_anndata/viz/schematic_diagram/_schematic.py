@@ -89,7 +89,7 @@ def draw_layer_rect(
 def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
     """
     Render a schematic SVG of an AnnData object, optionally highlighting
-    differences in .obs, .var, and .layers relative to a snapshot.
+    differences in .obs, .var, .layers, and .obsm relative to a snapshot.
 
     Parameters
     ----------
@@ -118,50 +118,61 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
 
         var_keys = list(diff_from.var.keys())
         var_keys += [k for k in adata.var.keys() if k not in var_keys]
+
+        obsm_keys = list(diff_from.obsm.keys())
+        obsm_keys += [k for k in adata.obsm.keys() if k not in obsm_keys]
     else:
         obs_keys = list(adata.obs.keys())
         var_keys = list(adata.var.keys())
+        obsm_keys = list(adata.obsm.keys())
 
     # -------------------
-    # Compute diff status for obs and var
+    # Compute diff status for obs, var, layers
     # -------------------
     obs_status: dict[str, str] = {}
     var_status: dict[str, str] = {}
     layer_status: dict[str, str] = {}
+    obsm_status: dict[str, str] = {}
 
     if diff_from is not None:
-        obs_prev = set(diff_from.obs.keys())
-        obs_now = set(adata.obs.keys())
+        obs_prev, obs_now = set(diff_from.obs.keys()), set(adata.obs.keys())
+        var_prev, var_now = set(diff_from.var.keys()), set(adata.var.keys())
+        layer_prev, layer_now = set(diff_from.layers.keys()), set(adata.layers.keys())
+        obsm_prev, obsm_now = set(diff_from.obsm.keys()), set(adata.obsm.keys())
+
         for key in obs_now - obs_prev:
             obs_status[key] = "added"
         for key in obs_prev - obs_now:
             obs_status[key] = "removed"
 
-        var_prev = set(diff_from.var.keys())
-        var_now = set(adata.var.keys())
         for key in var_now - var_prev:
             var_status[key] = "added"
         for key in var_prev - var_now:
             var_status[key] = "removed"
 
-        # -------------------
-        # Compute diff status for layers
-        # -------------------
-        layer_prev = set(diff_from.layers.keys())
-        layer_now = set(adata.layers.keys())
         for key in layer_now - layer_prev:
             layer_status[key] = "added"
         for key in layer_prev - layer_now:
             layer_status[key] = "removed"
 
+        for key in obsm_now - obsm_prev:
+            obsm_status[key] = "added"
+        for key in obsm_prev - obsm_now:
+            obsm_status[key] = "removed"
+
     # -------------------
-    # Determine matrix size
+    # Determine matrix sizes
     # -------------------
     obs_cells = min(max_cells, math.ceil(math.sqrt(adata.n_obs)))
     var_cells = min(max_cells, math.ceil(math.sqrt(adata.n_vars)))
+    obsm_cells = min(max_cells, math.ceil(math.sqrt(next(iter(adata.obsm.values())).shape[0]) if adata.obsm else 0))
 
     X_width = var_cells * cell
     X_height = obs_cells * cell
+    # BUG: Why do we need to subtract 30px here to get everything to line up?
+    # TODO: Make the obsm width adaptive to label length (need not be related to cells)
+    obsm_width = obsm_cells * cell - 30
+    obsm_height = X_height  # match X height
 
     # -------------------
     # Var block height
@@ -181,27 +192,21 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
 
     x0 = pad + 120
     y0 = pad + var_block_height + 30
-    canvas_width = x0 + X_width + 30 + obs_width + extra_canvas_padding
 
-    # maximum shift from stacked layers
+    canvas_width = x0 + obsm_width + 20 + X_width + 30 + obs_width + extra_canvas_padding
     num_layers = len(adata.layers)
     max_layer_shift = LAYER_Y_OFFSET * num_layers
-    # canvas height: bottom of X + maximum layer shift + padding
-    canvas_height = y0 + X_height + max_layer_shift + 50  # extra 20 px padding
+    canvas_height = y0 + X_height + max_layer_shift + 50
 
     dwg = svgwrite.Drawing(size=(canvas_width, canvas_height), profile="full")
 
     # -------------------
-    # Layers (stacked behind X, preserve order for removals)
+    # Layers (stacked behind X, preserve order)
     # -------------------
     all_layer_names = []
     if diff_from is not None:
-        # Combine layers from diff_from and current adata while preserving order
         for ln in diff_from.layers.keys():
-            if ln in adata.layers:
-                all_layer_names.append(ln)
-            else:
-                all_layer_names.append(ln)  # removed layer
+            all_layer_names.append(ln)
         for ln in adata.layers.keys():
             if ln not in all_layer_names:
                 all_layer_names.append(ln)
@@ -210,40 +215,94 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
 
     for i, layer_name in reversed(list(enumerate(all_layer_names))):
         layer_data = adata.layers.get(layer_name, None)
-
         if layer_data is not None:
-            # Existing layer → use actual shape
             layer_rows = min(max_cells, math.ceil(math.sqrt(layer_data.shape[0])))
             layer_cols = min(max_cells, math.ceil(math.sqrt(layer_data.shape[1])))
         else:
-            # Removed layer → use shape from diff_from
-            removed_data = diff_from.layers.get(layer_name)
+            removed_data = diff_from.layers.get(layer_name) if diff_from else None
             if removed_data is not None:
                 layer_rows = min(max_cells, math.ceil(math.sqrt(removed_data.shape[0])))
                 layer_cols = min(max_cells, math.ceil(math.sqrt(removed_data.shape[1])))
             else:
-                # Fallback (very unlikely)
                 layer_rows = layer_cols = max_cells
 
         draw_layer_rect(
             dwg,
-            x0=x0,
+            x0=x0 + obsm_width + 20,  # shift to X + layers area
             y0=y0,
             cell=cell,
             layer_index=i,
             layer_name=layer_name,
             n_rows=layer_rows,
             n_cols=layer_cols,
-            color=COLORS["layers"],  # outline color unchanged
+            color=COLORS["layers"],
             status=layer_status.get(layer_name),
         )
 
     # -------------------
-    # X block (on top of layers)
+    # obsm block (left of X, stacked like layers)
+    # -------------------
+    if obsm_keys:
+        base_x = x0
+        base_y = y0  # align first entry with X
+
+        n_rows = obsm_cells
+        n_cols = var_cells
+
+        for i, key in reversed(list(enumerate(obsm_keys))):
+            layer_index = i  # first entry = 0
+
+            # Compute offsets: first entry aligned with base_y, subsequent entries shifted
+            x_shift = LAYER_X_OFFSET * (layer_index - 1)
+            y_shift = LAYER_Y_OFFSET * (layer_index - 1)
+            entry_x = base_x + x_shift
+            entry_y = base_y + y_shift
+
+            draw_layer_rect(
+                dwg,
+                x0=entry_x,
+                y0=entry_y,
+                cell=cell,
+                layer_index=0,  # already applied shift manually
+                layer_name=key,
+                n_rows=n_rows,
+                n_cols=n_cols,
+                color=COLORS["obsm"],
+                status=obsm_status.get(key),
+            )
+
+        # Draw generic obsm label in the middle of the first entry
+        first_entry_x = base_x
+        first_entry_y = base_y
+        label_width = n_cols * cell
+        label_height = n_rows * cell
+
+        # Only count current obsm entries for the label
+        if diff_from is not None:
+            current_obsm_keys = [k for k in obsm_keys if obsm_status.get(k) != "removed"]
+        else:
+            current_obsm_keys = obsm_keys
+
+        lines = ["obsm", f"{adata.n_obs} @ {len(current_obsm_keys)}"]
+        line_height = 14
+        start_y = first_entry_y + label_height / 2 - (len(lines) - 1) * line_height / 2
+        for i, line in enumerate(lines):
+            dwg.add(
+                dwg.text(
+                    line,
+                    insert=(first_entry_x + label_width / 2, start_y + i * line_height),
+                    text_anchor="middle",
+                    font_size=12,
+                    font_family="sans-serif",
+                )
+            )
+
+    # -------------------
+    # X block
     # -------------------
     draw_grid_block(
         dwg,
-        x=x0,
+        x=x0 + obsm_width + 20,
         y=y0,
         width=X_width,
         height=X_height,
@@ -254,11 +313,11 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
     )
 
     # -------------------
-    # Obs block (right)
+    # Obs block
     # -------------------
     draw_grid_block(
         dwg,
-        x=x0 + X_width + 30,
+        x=x0 + obsm_width + 20 + X_width + 30,
         y=y0,
         width=obs_width,
         height=X_height,
@@ -269,13 +328,12 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
     )
 
     # -------------------
-    # Obs keys (rotated 45° above obs block)
+    # Obs keys (rotated)
     # -------------------
     baseline_y = y0 - 7
     for i, key in enumerate(obs_keys):
-        x = x0 + X_width + 30 + 10 + i * obs_key_spacing
+        x = x0 + obsm_width + 20 + X_width + 30 + 10 + i * obs_key_spacing
         style = diff_text_style(obs_status.get(key))
-
         dwg.add(
             dwg.text(
                 key,
@@ -293,7 +351,7 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
     # -------------------
     draw_grid_block(
         dwg,
-        x=x0,
+        x=x0 + obsm_width + 20,
         y=y0 - var_block_height - 30,
         width=X_width,
         height=var_block_height,
@@ -304,16 +362,15 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
     )
 
     # -------------------
-    # Var keys (left of var block)
+    # Var keys
     # -------------------
     for i, key in enumerate(var_keys):
         y = y0 - 27 - (len(var_keys) - i) * line_height + line_height / 2
         style = diff_text_style(var_status.get(key))
-
         dwg.add(
             dwg.text(
                 key,
-                insert=(x0 - 10, y),
+                insert=(x0 + obsm_width + 20 - 10, y),
                 font_size=FONT_SIZE,
                 font_family="sans-serif",
                 text_anchor="end",
