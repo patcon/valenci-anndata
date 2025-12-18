@@ -22,7 +22,7 @@ def draw_grid_block(
             insert=(x, y),
             size=(width, height),
             fill="white",
-            fill_opacity=0.9,
+            # fill_opacity=0.9,
             stroke=stroke,
             stroke_width=2,
         )

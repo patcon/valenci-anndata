@@ -11,42 +11,8 @@ from ._utils import diff_text_style
 LAYER_X_OFFSET = -5  # horizontal shift per layer (depth effect)
 LAYER_Y_OFFSET = 16   # vertical shift per layer
 LAYER_LABEL_Y_SPACING = 4  # additional vertical space for layer labels
+FONT_SIZE = 12
 
-def draw_layer_block(dwg, x0, y0, cell, layer_index, layer_name, n_rows, n_cols, stroke="#e67e22"):
-    """
-    Draw a single .layers block stacked below .X.
-    
-    Parameters
-    ----------
-    dwg : svgwrite.Drawing
-    x0, y0 : float
-        Base X/Y of the main X block
-    cell : float
-        Size of a single cell
-    layer_index : int
-        Which layer (0 = closest to X, 1 = next below)
-    layer_name : str
-        Name of the layer
-    n_rows, n_cols : int
-        Rows and columns of the layer
-    stroke : str
-        Border color
-    """
-    # Shift right (depth effect) and down (to separate labels)
-    x_shift = -layer_index * 10  # shift left for depth
-    y_shift = (layer_index + 1) * 20  # space for label
-
-    draw_grid_block(
-        dwg,
-        x=x0 + x_shift,
-        y=y0 + y_shift,
-        width=n_cols * cell,
-        height=n_rows * cell,
-        rows=n_rows,
-        cols=n_cols,
-        label=f"{layer_name}\n{n_rows} x {n_cols}",
-        stroke=stroke,
-    )
 
 def draw_layer_rect(dwg, x0, y0, cell, layer_index, layer_name, n_rows, n_cols, color="#e67e22"):
     """
@@ -72,8 +38,8 @@ def draw_layer_rect(dwg, x0, y0, cell, layer_index, layer_name, n_rows, n_cols, 
     height = n_rows * cell
 
     # Apply configurable shifts
-    x_shift = LAYER_X_OFFSET * layer_index
-    y_shift = LAYER_Y_OFFSET * layer_index
+    x_shift = LAYER_X_OFFSET * (layer_index + 1)
+    y_shift = LAYER_Y_OFFSET * (layer_index + 1)
 
     rect_x = x0 + x_shift
     rect_y = y0 + y_shift
@@ -95,7 +61,7 @@ def draw_layer_rect(dwg, x0, y0, cell, layer_index, layer_name, n_rows, n_cols, 
         dwg.text(
             layer_name,
             insert=(rect_x + 5, label_y),
-            font_size=12,
+            font_size=FONT_SIZE,
             font_family="sans-serif",
             fill="black",
         )
@@ -166,9 +132,8 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
     needed_obs_width = len(obs_keys) * obs_key_spacing
     obs_width = max(min_obs_width, needed_obs_width)
 
-    font_size = 12
     tilt_factor = 0.707  # sin/cos 45°
-    last_key_extra = len(obs_keys[-1]) * (font_size * 0.5) * tilt_factor if obs_keys else 0
+    last_key_extra = len(obs_keys[-1]) * (FONT_SIZE * 0.5) * tilt_factor if obs_keys else 0
     extra_canvas_padding = last_key_extra + 10
 
     x0 = pad + 120
@@ -187,7 +152,7 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
     # -------------------
     # Layers (stacked behind X)
     # -------------------
-    for i, (layer_name, layer_data) in enumerate(adata.layers.items()):
+    for i, (layer_name, layer_data) in reversed(list(enumerate(adata.layers.items()))):
         layer_rows = min(max_cells, math.ceil(math.sqrt(layer_data.shape[0])))
         layer_cols = min(max_cells, math.ceil(math.sqrt(layer_data.shape[1])))
 
@@ -245,7 +210,7 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
             dwg.text(
                 key,
                 insert=(x, baseline_y),
-                font_size=font_size,
+                font_size=FONT_SIZE,
                 font_family="sans-serif",
                 text_anchor="start",
                 transform=f"rotate(-45,{x},{baseline_y})",
@@ -279,7 +244,7 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
             dwg.text(
                 key,
                 insert=(x0 - 10, y),
-                font_size=12,
+                font_size=FONT_SIZE,
                 font_family="sans-serif",
                 text_anchor="end",
                 **style,
