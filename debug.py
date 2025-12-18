@@ -92,7 +92,7 @@ def fake_recipe_polis(
     col_means = np.where(X_masked != 0, X_masked, np.nan).mean(axis=0)
     inds = np.where(X_imputed == 0)
     X_imputed[inds] = np.take(col_means, inds[1])
-    adata.layers["X_masked_imputed_mean"] = X_imputed
+    adata.layers["X_imputed_mean"] = X_imputed
 
     # -------------------
     # Provenance marker (uns)
@@ -114,9 +114,11 @@ with val.viz.schematic_diagram(diff_from=adata):
 
 val.viz.schematic_diagram(adata)
 
-del adata.obs["n_votes"]
-print(adata)
 print(adata_snap)
-val.viz.schematic_diagram(adata, diff_from=adata_snap)
+print("=========")
+print(adata)
+
+# del adata.obs["n_votes"]
+# val.viz.schematic_diagram(adata, diff_from=adata_snap)
 
 # val.scanpy.pl.pca(adata, color="kmeans_polis")
