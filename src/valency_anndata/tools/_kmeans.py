@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from anndata import AnnData
 from reddwarf.sklearn.cluster import BestPolisKMeans
 from typing import Optional, Tuple
@@ -66,7 +67,7 @@ def kmeans(
     if not best_kmeans.best_estimator_:
         raise RuntimeError("BestPolisKMeans did not find a valid estimator.")
 
-    labels = best_kmeans.best_estimator_.labels_
+    labels = pd.Categorical(best_kmeans.best_estimator_.labels_)
 
     if inplace:
         adata.obs[key_added] = labels
