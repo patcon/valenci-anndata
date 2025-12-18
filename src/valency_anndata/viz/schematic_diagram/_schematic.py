@@ -171,7 +171,7 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
     X_height = obs_cells * cell
     # BUG: Why do we need to subtract 30px here to get everything to line up?
     # TODO: Make the obsm width adaptive to label length (need not be related to cells)
-    obsm_width = obsm_cells * cell - 30
+    obsm_width = obsm_cells * cell # - 30 # this breaks wide .X data layouts
     obsm_height = X_height  # match X height
 
     # -------------------
