@@ -148,13 +148,21 @@ def get_default_browser_name() -> str | None:
 
     return None
 
-# ------------------------------------------------------------
-# Environment detection
-# ------------------------------------------------------------
-def in_notebook() -> bool:
-    import sys
-    return "ipykernel" in sys.modules
-
+def diff_text_style(status: str | None) -> dict[str, str]:
+    if status == "added":
+        return {
+            "fill": "green",
+            "font_weight": "bold",
+        }
+    if status == "removed":
+        return {
+            "fill": "red",
+            "font_weight": "bold",
+        }
+    return {
+        "fill": "black",
+        "font_weight": "normal",
+    }
 
 # ------------------------------------------------------------
 # SVG primitives
@@ -241,26 +249,25 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
     # -------------------
     # Determine diff sets
     # -------------------
-    obs_color_map = {}
-    var_color_map = {}
+    obs_status: dict[str, str] = {}
+    var_status: dict[str, str] = {}
+
     if diff_from is not None:
         obs_prev = set(diff_from.obs.keys())
         obs_now = set(adata.obs.keys())
-        for key in obs_now:
-            if key not in obs_prev:
-                obs_color_map[key] = "green"  # added
-        for key in obs_prev:
-            if key not in obs_now:
-                obs_color_map[key] = "red"    # removed
+
+        for key in obs_now - obs_prev:
+            obs_status[key] = "added"
+        for key in obs_prev - obs_now:
+            obs_status[key] = "removed"
 
         var_prev = set(diff_from.var.keys())
         var_now = set(adata.var.keys())
-        for key in var_now:
-            if key not in var_prev:
-                var_color_map[key] = "green"
-        for key in var_prev:
-            if key not in var_now:
-                var_color_map[key] = "red"
+
+        for key in var_now - var_prev:
+            var_status[key] = "added"
+        for key in var_prev - var_now:
+            var_status[key] = "removed"
 
     # -------------------
     # Determine matrix size
@@ -336,7 +343,8 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
     baseline_y = y0 - 7
     for i, key in enumerate(obs_keys):
         x = x0 + X_width + 30 + 10 + i * obs_key_spacing
-        color = obs_color_map.get(key, "black")
+        style = diff_text_style(obs_status.get(key))
+
         dwg.add(
             dwg.text(
                 key,
@@ -344,8 +352,8 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
                 font_size=font_size,
                 font_family="sans-serif",
                 text_anchor="start",
-                fill=color,
                 transform=f"rotate(-45,{x},{baseline_y})",
+                **style,
             )
         )
 
@@ -369,7 +377,8 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
     # -------------------
     for i, key in enumerate(var_keys):
         y = y0 - 27 - (len(var_keys) - i) * line_height + line_height / 2
-        color = var_color_map.get(key, "black")
+        style = diff_text_style(var_status.get(key))
+
         dwg.add(
             dwg.text(
                 key,
@@ -377,7 +386,7 @@ def adata_structure_svg(adata: AnnData, diff_from: AnnData | None = None):
                 font_size=12,
                 font_family="sans-serif",
                 text_anchor="end",
-                fill=color,
+                **style,
             )
         )
 
