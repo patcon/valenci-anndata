@@ -207,10 +207,14 @@ def _load_raw_polis_data(source):
 
     elif convo_src.conversation_id:
         votes_list = client.get_all_votes_slow(conversation_id=convo_src.conversation_id)
-        df = pd.DataFrame(votes_list)
+        df = pd.DataFrame([v.to_dict() for v in votes_list])
         df["source"] = "api"
         df["source_id"] = convo_src.conversation_id
-        df.rename(columns={"modified": "timestamp"}, inplace=True)
+        df.rename(columns={
+            "modified": "timestamp",
+            "pid": "voter-id",
+            "tid": "comment-id",
+        }, inplace=True)
 
         vote_frames.append(df)
 
