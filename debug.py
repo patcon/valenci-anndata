@@ -79,6 +79,22 @@ def fake_recipe_polis(
     adata.obs[key_added_kmeans] = pd.Categorical(labels)
 
     # -------------------
+    # Fake layers
+    # -------------------
+    # Layer: X_masked (simulate some missing values)
+    X_masked = adata.X.copy()
+    mask = rng.random(size=X_masked.shape) < 0.2  # 20% missing
+    X_masked[mask] = 0
+    adata.layers["X_masked"] = X_masked
+
+    # Layer: X_masked_imputed_mean (replace missing with column mean)
+    X_imputed = X_masked.copy()
+    col_means = np.where(X_masked != 0, X_masked, np.nan).mean(axis=0)
+    inds = np.where(X_imputed == 0)
+    X_imputed[inds] = np.take(col_means, inds[1])
+    adata.layers["X_masked_imputed_mean"] = X_imputed
+
+    # -------------------
     # Provenance marker (uns)
     # -------------------
     adata.uns.setdefault("polis", {})
