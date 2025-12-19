@@ -3,6 +3,8 @@ import pandas as pd
 from anndata import AnnData
 from reddwarf.sklearn.cluster import BestPolisKMeans
 from typing import Optional, Tuple
+from scanpy.get import _check_mask
+from numpy.typing import NDArray
 
 
 def kmeans(
@@ -12,6 +14,7 @@ def kmeans(
     init: str = "kmeans++",
     init_centers: Optional[np.ndarray] = None,
     random_state: Optional[int] = None,
+    mask_obs: NDArray[np.bool_] | str | None = None,
     key_added: str = "kmeans",
     inplace: bool = True,
 ) -> AnnData | None:
@@ -30,6 +33,10 @@ def kmeans(
         Initial cluster centers to use.
     random_state : int, optional
         Random seed for reproducibility.
+    mask_obs
+        Restrict clustering to a certain set of observations. The mask is
+        specified as a boolean array or a string referring to an array in
+        :attr:`~anndata.AnnData.obs`.
     key_added : str
         Name of the column to store cluster labels in `adata.obs`.
     inplace : bool
@@ -48,10 +55,21 @@ def kmeans(
             raise KeyError(f"use_rep='{use_rep}' not found in adata.obsm")
         X = adata.obsm[use_rep]
 
+    if X is None:
+        raise ValueError("No data matrix found for clustering.")
+
     if k_bounds is None:
         k_bounds_list = [2, 5]
     else:
         k_bounds_list = list(k_bounds)
+
+    mask = _check_mask(adata, mask_obs, "obs")
+    if mask is None:
+        X_cluster = X
+    else:
+        X_cluster = X[mask]
+        if X_cluster.shape[0] == 0:
+            raise ValueError("mask_obs excludes all observations.")
 
     if not isinstance(X, np.ndarray):
         raise ValueError("adata.X must be a numpy array.")
@@ -62,12 +80,20 @@ def kmeans(
         init_centers=init_centers,
         random_state=random_state,
     )
-    best_kmeans.fit(X)
+    best_kmeans.fit(X_cluster)
 
     if not best_kmeans.best_estimator_:
         raise RuntimeError("BestPolisKMeans did not find a valid estimator.")
 
-    labels = pd.Categorical(best_kmeans.best_estimator_.labels_)
+    raw_labels = best_kmeans.best_estimator_.labels_
+
+    if mask is None:
+        full_labels = raw_labels
+    else:
+        full_labels = np.full(adata.n_obs, np.nan)
+        full_labels[mask] = raw_labels
+
+    labels = pd.Categorical(full_labels)
 
     if inplace:
         adata.obs[key_added] = labels

@@ -10,6 +10,8 @@ def recipe_polis(
     key_added_kmeans: str = "kmeans_polis",
     inplace: bool = True,
 ):
+    participant_vote_threshold = 7
+
     if not inplace:
         adata = adata.copy()
 
@@ -17,9 +19,9 @@ def recipe_polis(
     assert isinstance(adata.X, np.ndarray)
 
     # 1. Pre-reducer mask
-    adata.var["pre_reducer_mask"] = adata.var.eval("~is_meta and moderation_state > -1")
+    adata.var["zero_mask"] = adata.var.eval("~is_meta and moderation_state > -1")
 
-    mask = adata.var["pre_reducer_mask"].to_numpy()
+    mask = adata.var["zero_mask"].to_numpy()
 
     # 2. Mask votes
     X_masked = adata.X.copy()
@@ -49,11 +51,16 @@ def recipe_polis(
     # Set a recognizable key
     adata.obsm[key_added_pca] = adata.obsm["X_pca_masked_scaled"]
 
+    # Create cluster mask for threshold
+    non_nan_counts = np.sum(~np.isnan(adata.X), axis=1)
+    adata.obs["cluster_mask"] = non_nan_counts >= participant_vote_threshold
+
     val.tools.kmeans(
         adata,
         use_rep=key_added_pca,
         k_bounds=(2, 5),
         init="polis",
+        mask_obs="cluster_mask",
         key_added=key_added_kmeans,
         inplace=inplace,
     )
