@@ -14,6 +14,9 @@ Small things we need done: (these will move to pull requests soon)
 - [ ] a simple documentation website using mkdocs (e.g., front-page from README + API page)
 - [ ] write a dataset processor for importing representative likert survey data into valency-anndata
     - See "Data Loading" section of [`example-usage.ipynb`](./example-usage.ipynb)
+- [ ] add [PaCMAP algorithm](https://github.com/YingfanWang/PaCMAP) support (model off of `scanpy.tl.umap()`)
+- [ ] add [LocalMAP algorithm](https://github.com/williamsyy/LocalMAP) support (model off of `scanpy.tl.umap()`)
+    - despite the claims of PaCMAP's README, LocalMAP is already merged into PaCMAP's codebase
 
 See [`TODO.md`](./TODO.md) or ask patcon for other ideas!
 
