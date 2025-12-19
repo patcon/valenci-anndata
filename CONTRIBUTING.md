@@ -12,6 +12,8 @@ Small things we need done: (these will move to pull requests soon)
 - [ ] some simple tests of existing functionality
 - [ ] CI running on GitHub actions, running a basic install on a few versions of Python
 - [ ] a simple documentation website using mkdocs (e.g., front-page from README + API page)
+- [ ] write a dataset processor for importing representative likert survey data into valency-anndata
+    - See "Data Loading" section of [`example-usage.ipynb`](./example-usage.ipynb)
 
 See [`TODO.md`](./TODO.md) or ask patcon for other ideas!
 
@@ -27,3 +29,5 @@ See [`TODO.md`](./TODO.md) or ask patcon for other ideas!
     - Use [Google CoLab](https://colab.research.google.com/)'s Notebook environment to run through it in the browser
 - [ ] Open and play around with valency-anndata's own Python Notebook
     - https://colab.research.google.com/github/patcon/valency-anndata/blob/main/example-usage.ipynb
+- [ ] Review this notebook that migrates large-scale representative likert survey data into polislike form, for side-by-side analysis
+    - https://github.com/nishio/UTAS-UMAP/
