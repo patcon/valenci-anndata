@@ -19,13 +19,15 @@ Small things we need done: (these will move to pull requests soon)
 - [ ] add [LocalMAP algorithm](https://github.com/williamsyy/LocalMAP) support (model off of `scanpy.tl.umap()`)
     - despite the claims of PaCMAP's README, LocalMAP is already merged into PaCMAP's codebase
 - [ ] val.viz.schematic_diagram: remove misleading grid lines from all non-X blocks
-- [ ] make `is_translated` more clever (to know when things AREN'T translated)
+- [ ] val.datasets.polis.translate_statements: make `is_translated` more clever (to know when things AREN'T translated)
 - [ ] val.datasets.polis: summarize changes during .load()
 - [ ] val.viz.schematic_diagram: when no diff_from arg provided, assume diff from empty AnnData
 - [ ] val.datasets.polis: when above n participants, require allow_large_scrape=True to use convo url
 - [ ] val.datasets.polis: rename adata.uns objects to have `raw_` prefix
 - [ ] val.tools.recipe_polis: document polis pipeline, e.g. flowchart
 - [ ] val.tools.impute: convert to use scikit-learn's SimpleImputer
+- [ ] val.tools.polis: Add helper method to extract metadata statements into obs
+    - clustering doesn't happen on these, as these votes get zeroed out in `zero_mask`
 
 
 See [`TODO.md`](./TODO.md) or ask patcon for other ideas!
