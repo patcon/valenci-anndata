@@ -28,6 +28,7 @@ Small things we need done: (these will move to pull requests soon)
 - [ ] val.tools.polis: Add helper method to extract metadata statements into obs
     - clustering doesn't happen on these, as these votes get zeroed out in `zero_mask`
 - [ ] val.tools.kmeans: get kmeans++ init strategy working (in red-dwarf)
+- [ ] val.viz: re-export sc.pl.embedding into valency-anndata
 
 
 See [`TODO.md`](./TODO.md) or ask patcon for other ideas!
