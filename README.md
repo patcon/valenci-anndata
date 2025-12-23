@@ -34,7 +34,7 @@ with val.viz.schematic_diagram(diff_from=adata):
 
 
 ```py
-val.viz.embedding(adata, basis="pca_polis", colors="kmeans_polis")
+val.viz.embedding(adata, basis="pca_polis", color="kmeans_polis")
 ```
 <img height="200" alt="Screenshot 2025-12-23 at 12 00 59 AM" src="https://github.com/user-attachments/assets/7cfe76d5-a03f-4024-bfe1-d152747845e4" />
 
@@ -50,7 +50,7 @@ val.viz.schematic_diagram(diff_from=adata):
 
 ```py
 val.viz.embedding(adata, basis="pca_polis",
-    colors=["kmeans_polis", "pct_seen", "pct_agree", "pct_pass"],
+    color=["kmeans_polis", "pct_seen", "pct_agree", "pct_pass"],
 )
 ```
 <img height="200" alt="Screenshot 2025-12-23 at 12 58 50 AM" src="https://github.com/user-attachments/assets/18133b45-cd2b-41a9-a7c5-2101426ba1f9" />
@@ -87,7 +87,7 @@ with val.viz.schematic_diagram(diff_from=adata):
 
 
 ```py
-val.scanpy.pl.embedding(adata, basis="pacmap",
+val.viz.embedding(adata, basis="pacmap",
     color=["kmeans_pacmap", "pct_seen", "pct_agree", "pct_pass"],
 )
 ```
