@@ -1,4 +1,5 @@
 from scanpy.plotting._tools.scatterplots import (
+    embedding,
     pca,
     umap,
 )
@@ -11,6 +12,7 @@ __all__ = [
     "schematic_diagram",
 
     # Simple re-export of scanpy.
+    "embedding",
     "pca",
     "umap",
 ]
