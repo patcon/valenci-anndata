@@ -30,13 +30,6 @@ with val.viz.schematic_diagram(diff_from=adata):
     val.tools.recipe_polis(adata, key_added_pca="X_pca_polis")
 ```
 
-```py
-with val.viz.schematic_diagram(diff_from=adata):
-   val.viz.embedding(adata, basis="pca_polis",
-      color="kmeans_polis",
-   )
-```
-
 ### Exploring Polis Pipelines
 
 ```py
@@ -45,7 +38,7 @@ val.viz.schematic_diagram(diff_from=adata):
 ```
 
 ```py
-val.scanpy.pl.embedding(adata, basis="pca_polis",
+val.viz.embedding(adata, basis="pca_polis",
   color=["kmeans_polis", "pct_seen", "pct_agree", "pct_pass"],
 )
 ```
