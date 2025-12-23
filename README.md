@@ -27,7 +27,7 @@ val.viz.schematic_diagram(adata, diff_from=None)
 
 ```py
 with val.viz.schematic_diagram(diff_from=adata):
-    val.tools.recipe_polis(adata)
+    val.tools.recipe_polis(adata, key_added_pca="X_pca_polis")
 ```
 
 ```py
