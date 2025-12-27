@@ -4,13 +4,19 @@ import webbrowser
 from ._browser import get_default_browser_name
 
 def _display_svg_in_notebook(svg_text: str) -> bool:
-    """Return True if displayed successfully, False otherwise."""
+    """Return True if displayed successfully in a notebook frontend."""
     try:
-        from IPython.display import SVG, display  # type: ignore[reportMissingImports]
-        display(SVG(svg_text))
-        return True
+        from IPython import get_ipython # type: ignore[reportMissingImports]
+        from IPython.display import SVG, display # type: ignore[reportMissingImports]
     except ImportError:
         return False
+
+    ip = get_ipython()
+    if ip is None:
+        return False
+
+    display(SVG(svg_text))
+    return True
 
 def _show_svg(dwg):
     svg_text = dwg.tostring()
