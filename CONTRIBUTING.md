@@ -30,6 +30,7 @@ Small things we need done: (these will move to pull requests soon)
 - [ ] val.tools.kmeans: get kmeans++ init strategy working (in red-dwarf)
 - [ ] val.viz: re-export sc.pl.embedding into valency-anndata
 - [ ] research new tools to assess and validate cluster labels
+- [x] print Creative Commons attribution when loading Polis data, as per report page note.
 
 
 See [`TODO.md`](./TODO.md) or ask patcon for other ideas!

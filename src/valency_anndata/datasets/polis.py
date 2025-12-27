@@ -1,5 +1,6 @@
 import asyncio
 import re
+import textwrap
 import anndata as ad
 import pandas as pd
 from dataclasses import dataclass
@@ -271,7 +272,55 @@ def _load_raw_polis_data(source):
         "votes": "raw vote events",
     }
 
+    _print_attribution_text(convo_src)
+
     return adata
+
+def _print_attribution_text(convo_src):
+    """
+    Print attribution text to satisfy Creative Commons license.
+    """
+    report_id = getattr(convo_src, "report_id", None)
+    conversation_id = getattr(convo_src, "conversation_id", None)
+
+    if not report_id and not conversation_id:
+        raise ValueError(
+            "Cannot generate attribution text: neither "
+            "`convo_src.report_id` nor `convo_src.conversation_id` is set."
+        )
+    base = (
+        "Data was gathered using the Polis software "
+        "(see: https://compdemocracy.org/polis and "
+        "https://github.com/compdemocracy/polis) "
+        "and is sub-licensed under CC BY 4.0 with Attribution to "
+        "The Computational Democracy Project."
+    )
+
+    if report_id:
+        tail = (
+            "The data and more information about how the data was collected "
+            f"can be found at the following link: https://pol.is/report/{report_id}"
+        )
+    else:
+        tail = (
+            f"The data was retrieved from https://pol.is/{conversation_id} "
+            "and more information can be found at "
+            "https://compdemocracy.org/Polis-Conversation-Data/"
+        )
+
+    print(format_attribution(base + "\n\n" + tail))
+
+def format_attribution(text: str, *, width: int = 80) -> str:
+    return "\n".join(
+        textwrap.fill(
+            paragraph,
+            width=width,
+            break_long_words=False,
+            break_on_hyphens=False,
+        )
+        for paragraph in text.split("\n\n")
+    )
+
 
 def _populate_var_statements(adata, translate_to: Optional[str] = None):
     statements_aligned = adata.uns["statements"].copy()

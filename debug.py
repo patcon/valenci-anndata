@@ -39,7 +39,7 @@ adata_snap_layers = adata.copy()
 if not USE_REAL_DATA:
     del adata.obs["n_votes"]
 del adata.layers["X_masked"]
-del adata.obsm["X_pca_masked_scaled"]
+del adata.obsm["X_pca_masked_unscaled"]
 val.viz.schematic_diagram(adata, diff_from=adata_snap_layers)
 
 val.scanpy.pl.pca(adata, color="kmeans_polis")
