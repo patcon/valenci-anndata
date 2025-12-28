@@ -35,4 +35,6 @@ red-dwarf = { git = "https://github.com/polis-community/red-dwarf", rev = "algo-
 [dependency-groups]
 dev = [
     "ipykernel>=7.1.0",
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.7.1",
 ]
