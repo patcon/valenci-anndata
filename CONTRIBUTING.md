@@ -31,6 +31,7 @@ Small things we need done: (these will move to pull requests soon)
 - [ ] val.viz: re-export sc.pl.embedding into valency-anndata
 - [ ] research new tools to assess and validate cluster labels
 - [x] print Creative Commons attribution when loading Polis data, as per report page note.
+- [ ] val.preprocessing.calculate_qc_metrics: warn when performed on non-sparse data (expects NaNs for seen/unseen vote metrics to make sense)
 
 
 See [`TODO.md`](./TODO.md) or ask patcon for other ideas!
