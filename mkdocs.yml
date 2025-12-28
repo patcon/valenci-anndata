@@ -1,0 +1,14 @@
+site_name: valency-anndata
+site_url: https://patcon.github.io/valency-anndata
+repo_url: https://github.com/patcon/valency-anndata
+repo_name: patcon/valency-anndata
+extra:
+  logo_lg: assets/valency-anndata-logo-02.small.png
+theme:
+  name: material
+  custom_dir: docs/overrides
+  palette:
+    primary: cyan
+  icon:
+    logo: material/atom-variant
+    repo: simple/github
