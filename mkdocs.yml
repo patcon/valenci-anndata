@@ -2,8 +2,10 @@ site_name: valency-anndata
 site_url: https://patcon.github.io/valency-anndata
 repo_url: https://github.com/patcon/valency-anndata
 repo_name: patcon/valency-anndata
+
 extra:
   logo_lg: assets/valency-anndata-logo-02.small.png
+
 theme:
   name: material
   custom_dir: docs/overrides
@@ -14,8 +16,14 @@ theme:
     repo: simple/github
   features:
     - content.code.annotate
+
 markdown_extensions:
   # For code annotations
   - attr_list
   - md_in_html
   - pymdownx.superfences
+
+# This suggests accessing the dev site at localhost
+# instead of 127.0.0.1, the latter of which will break
+# any imgur images displayed in notebooks.
+dev_addr: localhost:8000
