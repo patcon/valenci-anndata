@@ -12,3 +12,10 @@ theme:
   icon:
     logo: material/atom-variant
     repo: simple/github
+  features:
+    - content.code.annotate
+markdown_extensions:
+  # For code annotations
+  - attr_list
+  - md_in_html
+  - pymdownx.superfences
