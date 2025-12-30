@@ -37,7 +37,7 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.inlinehilite
   - pymdownx.highlight:
-      linenums: true
+      # linenums: true
       anchor_linenums: true
       line_spans: __span
 
