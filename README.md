@@ -1,12 +1,10 @@
-<p align="center"><img src="https://imgur.com/UfnMqH0.png" alt="Logo" width=300></p>
+![diagram of one workflow of valencyann-data](docs/assets/valency-anndata-flow.alpha.logo.png)
 
 # valency-anndata
 
 Experimental tooling to support notebook analysis of polislike data.
 
 :sparkles: Inspired by [scanpy][] and the [scverse][] ecosystem! :heart:
-
-![diagram of one workflow of valencyann-data](docs/assets/valency-anndata-flow.alpha.png)
 
 ## Installation
 
