@@ -6,7 +6,7 @@ Experimental tooling to support notebook analysis of polislike data.
 
 :sparkles: Inspired by [scanpy][] and the [scverse][] ecosystem! :heart:
 
-![diagram of one workflow of valencyann-data](docs/assets/valency-anndata-flow.png)
+![diagram of one workflow of valencyann-data](docs/assets/valency-anndata-flow.alpha.png)
 
 ## Installation
 

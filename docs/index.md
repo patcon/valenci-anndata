@@ -4,7 +4,7 @@
 
 We aim to grow and support a community of data scientists, statisticians, software developers, UI designers, and deliberative process facilitators who wish to democratize insights from valence data, and strengthen democratic self-governance.
 
-![diagram of one workflow of valencyann-data](assets/valency-anndata-flow.png)
+![diagram of one workflow of valencyann-data](assets/valency-anndata-flow.alpha.png)
 
 ## Attribution
 
