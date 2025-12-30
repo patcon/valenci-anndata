@@ -16,6 +16,9 @@ theme:
     repo: simple/github
   features:
     - content.code.annotate
+    - content.code.copy
+    # Allow dynamic multiline highlighting and deeplinks
+    - content.code.select
 
 nav:
   - index.md
@@ -32,6 +35,11 @@ markdown_extensions:
   - attr_list
   - md_in_html
   - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.highlight:
+      linenums: true
+      anchor_linenums: true
+      line_spans: __span
 
 # This suggests accessing the dev site at localhost
 # instead of 127.0.0.1, the latter of which will break
