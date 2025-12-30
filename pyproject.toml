@@ -37,4 +37,5 @@ dev = [
     "ipykernel>=7.1.0",
     "mkdocs>=1.6.1",
     "mkdocs-material>=9.7.1",
+    "nbconvert>=7.16.6",
 ]
