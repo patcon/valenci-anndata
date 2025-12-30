@@ -1243,15 +1243,11 @@ wheels = [
 
 [[package]]
 name = "langevitour"
-version = "0.8.0"
-source = { registry = "https://pypi.org/simple" }
+version = "0.8.1"
+source = { git = "https://github.com/patcon/langevitour?rev=fix-js-indent#20ee112de2b5a472d59bdb645c40fc8a6281e877" }
 dependencies = [
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "numpy", version = "2.3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/d3/e4/9cb6e52bc75a5f7c4367c6a8d9458c1cd36b969ae2d29f055d69913b3c51/langevitour-0.8.0.tar.gz", hash = "sha256:c3a8bc150bdbd1e94645b5446244e40a4fd3f08d0c90e46ece606b038024d633", size = 55030, upload-time = "2025-04-13T00:43:06.022Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/6e/26/8eb41db046f9ed1f1334cdaa282c8d4a0d3127c6fd94b6bb4ee5d3324c2a/langevitour-0.8.0-py3-none-any.whl", hash = "sha256:c5bfeb0664c4c4a9844f0fcd1b2254af8ca9810371ccc70c5a2f219031b7f1ed", size = 55405, upload-time = "2025-04-13T00:32:14.546Z" },
 ]
 
 [[package]]
@@ -3303,7 +3299,7 @@ dev = [
 requires-dist = [
     { name = "anndata", specifier = ">=0.11.4" },
     { name = "googletrans", specifier = ">=4.0.2" },
-    { name = "langevitour", specifier = ">=0.8.0" },
+    { name = "langevitour", git = "https://github.com/patcon/langevitour?rev=fix-js-indent" },
     { name = "llvmlite", marker = "platform_machine == 'x86_64' and sys_platform == 'darwin'", specifier = "<=0.45.1" },
     { name = "nest-asyncio", specifier = ">=1.6.0" },
     { name = "pacmap", specifier = ">=0.8.0" },
