@@ -33,7 +33,7 @@ nav:
     - Datasets: api/datasets.md
     - Preprocessing: api/preprocessing.md
     - Tools: api/tools.md
-    - Viz: api/viz.md
+    - Visualizations: api/viz.md
     - Scanpy: api/scanpy.md
 
 not_in_nav: |

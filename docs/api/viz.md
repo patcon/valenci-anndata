@@ -1,3 +1,5 @@
+# Visualizations (Viz)
+
 ## `valency-anndata` methods
 
 ### ::: valency_anndata.viz.schematic_diagram
