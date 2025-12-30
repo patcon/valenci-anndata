@@ -23,17 +23,31 @@ def schematic_diagram(
     This function supports two usage modes: **render mode** and **context-manager mode**.
 
     -------------------------------------------------------------------------
-    1. Render mode
+    1\\. Render mode
     -------------------------------------------------------------------------
     Render a diagram of `adata` immediately.
 
-    Examples
-    --------
-    >>> schematic_diagram(adata)
-    >>> schematic_diagram(adata, diff_from=adata_snapshot)
+    # Examples
 
-    Behavior
-    --------
+    ```py
+    val.viz.schematic_diagram(adata)
+    ```
+
+    ```py
+    val.viz.schematic_diagram(adata, diff_from=None)
+    ```
+
+    <img src="../../tutorials/notebook-assets/example-usage_5_1.svg" width="50%">
+
+    ```py
+    adata_snapshot = adata.copy()
+    val.tools.some_transformation(adata, inplace=True)
+
+    val.viz.schematic_diagram(adata, diff_from=adata_snapshot)
+    ```
+
+    # Behavior
+
     - Visualizes `adata` structure (`X`, `obs`, `var`, `layers`, `obsm`).
     - If `diff_from` is provided:
         - Highlights additions and removals relative to `diff_from`.
@@ -44,17 +58,19 @@ def schematic_diagram(
     - The diagram is displayed inline (notebooks) or in a browser (script).
 
     -------------------------------------------------------------------------
-    2. Context-manager mode
+    2\\. Context-manager mode
     -------------------------------------------------------------------------
     Capture a snapshot on entering a `with` block, rendering a diff on exit.
 
-    Example
-    -------
-    >>> with schematic_diagram(diff_from=adata):
-    ...     some_transformation(adata)
+    # Example
 
-    Behavior
-    --------
+    ```py
+    with val.viz.schematic_diagram(diff_from=adata):
+        val.tools.some_transformation(adata, inplace=True)
+    ```
+
+    # Behavior
+
     - `diff_from` must be provided; `adata` must be omitted.
     - On entry, a snapshot of `diff_from` is recorded.
     - On exit, a diff diagram between the snapshot and current `adata` is rendered.
