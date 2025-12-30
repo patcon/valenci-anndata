@@ -38,14 +38,20 @@ class MkdocsAnnotationPreprocessor(Preprocessor):
                 )
 
                 # Clone 2: outputs only
-                output_only = nbformat.v4.new_code_cell(source="")
+                output_only = nbformat.from_dict(pending_code)
                 output_only.metadata.setdefault("transient", {})
                 output_only.metadata["transient"]["remove_source"] = True
-                output_only.outputs = pending_code.outputs
+
+                # Prevents annotation from including the next cell
+                # if it happens to be text/plain formatted with `indent` processor.
+                # TODO: Open pull request for nbconvert to use raw fenced code block instead of indent.
+                # See: https://github.com/jupyter/nbconvert/blob/216550b2aae4c329f4dab597a96ae7cac30de79a/share/templates/markdown/index.md.j2#L36-L38
+                md_spacer_cell = nbformat.v4.new_markdown_cell(source="---")
 
                 new_cells.extend([
                     code_only,
                     cell,
+                    md_spacer_cell,
                     output_only,
                 ])
 
