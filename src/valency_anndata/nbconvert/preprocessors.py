@@ -39,6 +39,8 @@ class MkdocsAnnotationPreprocessor(Preprocessor):
 
                 # Clone 2: outputs only
                 output_only = nbformat.v4.new_code_cell(source="")
+                output_only.metadata.setdefault("transient", {})
+                output_only.metadata["transient"]["remove_source"] = True
                 output_only.outputs = pending_code.outputs
 
                 new_cells.extend([
