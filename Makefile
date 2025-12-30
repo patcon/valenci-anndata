@@ -5,3 +5,6 @@ notebook-docs:
 
 serve:
 	uv run mkdocs serve
+
+build:
+	uv run mkdocs build
