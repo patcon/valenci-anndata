@@ -15,3 +15,5 @@ import scanpy as sc
 
 sc.logging.print_header()
 ```
+
+See [scanpy](https://scanpy.readthedocs.io/en/stable/api/index.html) for more methods you can experiment with via the `val.scanpy` namespace.

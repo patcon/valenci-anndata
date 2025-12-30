@@ -61,6 +61,9 @@ plugins:
     handlers:
       python:
         paths: [ src ]
+        inventories:
+          - https://scanpy.readthedocs.io/en/stable/objects.inv
+          - https://anndata.readthedocs.io/en/stable/objects.inv
         options:
           docstring_style: numpy
           # Allow parsing docs from wrapped scanpy methods.
