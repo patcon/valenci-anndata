@@ -14,20 +14,6 @@ We build on the following best-practices and standards:
 
 We are inspired by the solutions to comparable challenges that are being resolved in the single-cell -omics community, we aspire to bring comparable rigour, collaboration, and reproducibility to the social sciences and its corresponding valence data.
 
-## Commands
-
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
-
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
-
 <!-- Links -->
    [anndata]: https://scanpy.readthedocs.io/en/stable/
    [scanpy]: https://scanpy.readthedocs.io/en/latest/
