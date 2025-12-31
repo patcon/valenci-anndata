@@ -1,4 +1,4 @@
-<p align="center"><img src="https://imgur.com/UfnMqH0.png" alt="Logo" width=300></p>
+![diagram of one workflow of valencyann-data](docs/assets/valency-anndata-flow.alpha.logo.png)
 
 # valency-anndata
 

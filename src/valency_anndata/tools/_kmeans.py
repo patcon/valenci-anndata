@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from anndata import AnnData
 from reddwarf.sklearn.cluster import BestPolisKMeans
-from typing import Optional, Tuple
+from typing import Literal, Optional, Tuple
 from scanpy.get import _check_mask
 from numpy.typing import NDArray
 
@@ -11,7 +11,7 @@ def kmeans(
     adata: AnnData,
     use_rep: Optional[str] = None,
     k_bounds: Optional[Tuple[int, int]] = None,
-    init: str = "kmeans++",
+    init: Literal["kmeans++", "random", "polis"] = "kmeans++",
     init_centers: Optional[np.ndarray] = None,
     random_state: Optional[int] = None,
     mask_obs: NDArray[np.bool_] | str | None = None,
@@ -23,23 +23,23 @@ def kmeans(
 
     Parameters
     ----------
-    adata : AnnData
+    adata :
         Input data. Must have `.X` as a numpy array.
-    k_bounds : tuple[int, int] or list[int], optional
+    k_bounds :
         Minimum and maximum number of clusters to try. Defaults to [2, 5].
-    init : {'k-means++', 'random', 'polis'}
+    init :
         Initialization method for KMeans. Defaults to 'polis'.
-    init_centers : array-like, optional
+    init_centers :
         Initial cluster centers to use.
-    random_state : int, optional
+    random_state :
         Random seed for reproducibility.
-    mask_obs
+    mask_obs :
         Restrict clustering to a certain set of observations. The mask is
         specified as a boolean array or a string referring to an array in
-        :attr:`~anndata.AnnData.obs`.
-    key_added : str
+        [anndata.AnnData.obs][].
+    key_added :
         Name of the column to store cluster labels in `adata.obs`.
-    inplace : bool
+    inplace :
         If True, modify `adata` in place and return None.
         If False, return a copy with the clustering added.
 

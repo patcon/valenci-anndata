@@ -31,8 +31,17 @@ build-backend = "hatchling.build"
 [tool.uv.sources]
 polis-client = { git = "https://github.com/patcon/polis-client" }
 red-dwarf = { git = "https://github.com/polis-community/red-dwarf", rev = "algo-registries" }
+# Temporary fork (for website build only), until this gets merged:
+# See: https://github.com/pfh/langevitour/pull/9
+langevitour = { git = "https://github.com/patcon/langevitour", rev = "fix-js-indent" }
 
 [dependency-groups]
 dev = [
     "ipykernel>=7.1.0",
+    "itables>=2.6.2",
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.7.1",
+    "mkdocstrings-python>=2.0.1",
+    "nbconvert>=7.16.6",
+    "ruff>=0.14.10",
 ]
