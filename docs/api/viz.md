@@ -7,6 +7,7 @@
 ### ::: valency_anndata.viz.schematic_diagram.schematic_diagram
     options:
         heading: valency_anndata.viz.schematic_diagram
+        show_overloads: false
 
 ### ::: valency_anndata.viz.langevitour
 
