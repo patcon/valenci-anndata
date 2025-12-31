@@ -21,7 +21,10 @@ theme:
     - content.code.select
     # Expand nav tree by default.
     - navigation.expand
+    # When "*/index.md" is present, link it to the clickable parent.
     - navigation.indexes
+    # Update the URL anchor based on scroll position.
+    - navigation.tracking
 
 nav:
   - index.md
@@ -54,6 +57,11 @@ markdown_extensions:
       # Allows line highlights to work.
       anchor_linenums: true
       line_spans: __span
+  - toc:
+      # Make it more clear that right-side TOC is only for page.
+      title: On this page
+      # Enable anchors to appear beside headings on hover.
+      permalink: true
 
 plugins:
 - mkdocstrings:
