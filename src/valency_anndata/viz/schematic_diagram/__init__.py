@@ -76,10 +76,10 @@ def schematic_diagram(
 
     Parameters
     ----------
-    adata : AnnData, optional
+    adata :
         The AnnData object to visualize (required in render mode, must be omitted in
         context-manager mode).
-    diff_from : AnnData, None, or False, default False
+    diff_from :
         Determines the snapshot to diff against: (must be AnnData in context-manager mode)
         - `AnnData` instance: highlights differences from the snapshot.
         - `None`: highlights all entries as additions (diff from empty).
