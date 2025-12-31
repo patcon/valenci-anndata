@@ -20,6 +20,12 @@
   IN THE SOFTWARE.
 -->
 
+<!--
+  This was copied from mkdocs-material's templates, and changed as commented below.
+
+  Source: https://github.com/squidfunk/mkdocs-material/blob/master/src/templates/partials/nav.html
+-->
+
 {% import "partials/nav-item.html" as item with context %}
 
 <!-- Determine classes -->
@@ -49,11 +55,15 @@
     >
       {% include "partials/logo.html" %}
     </a>
+    <!-- START: VALENCY-ANNDATA CUSTOMIZATION -->
     {% if config.extra.logo_lg %}
+      <a href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}">
         <img src="{{ config.extra.logo_lg | url }}" width="100%" alt="{{ config.site_name }} logo">
+      </a>
     {% else %}
-        {{ config.site_name }}
+      {{ config.site_name }}
     {% endif %}
+    <!-- END: VALENCY-ANNDATA CUSTOMIZATION -->
   </label>
 
   <!-- Repository information -->
