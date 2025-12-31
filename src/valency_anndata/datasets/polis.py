@@ -94,12 +94,14 @@ def load(source: str, *, translate_to: Optional[str] = None, build_X: bool = Tru
     ----------
     source : str
         The Polis source to load. Supported formats include:
+
         - Full report URL: `https://pol.is/report/<report_id>`
         - Conversation URL: `https://pol.is/<conversation_id>`
         - Custom host URLs: `https://<host>/report/<report_id>` or `https://<host>/<conversation_id>`
         - Bare IDs:
             - Conversation ID (starts with a digit), e.g., `4asymkcrjf`
             - Report ID (starts with 'r'), e.g., `r4zdxrdscmukmkakmbz3k`
+
         The function will automatically parse the source to determine whether
         it refers to a conversation or report and fetch the appropriate data.
 
@@ -121,28 +123,38 @@ def load(source: str, *, translate_to: Optional[str] = None, build_X: bool = Tru
     adata : anndata.AnnData
         An AnnData object containing the loaded Polis data.
 
-        Attributes populated:
-        - `adata.uns["votes"]` : pd.DataFrame
-            Raw vote events fetched from the API or CSV export.
-        - `adata.uns["votes_meta"]` : dict
-            Metadata about the sources of votes, e.g., API vs CSV.
-        - `adata.uns["statements"]` : pd.DataFrame
-            Raw statements/comments for the conversation.
-        - `adata.uns["statements_meta"]` : dict
-            Metadata about the statements source.
-        - `adata.uns["source"]` : dict
-            Basic information about the Polis source (base URL, conversation ID, report ID).
-        - `adata.uns["schema"]` : dict
-            High-level description of `X` and `votes`.
-        - `adata.X` : np.ndarray (if `build_X=True`)
-            Participant × statement vote matrix (rows = participants, columns = statements).
-        - `adata.obs` : pd.DataFrame (if `build_X=True`)
-            Participant metadata (index = voter IDs).
-        - `adata.var` : pd.DataFrame (if `build_X=True`)
-            Statement metadata (index = statement IDs).
-        - `adata.raw` : anndata.AnnData (if `build_X=True`)
-            Snapshot of the first vote matrix and associated metadata. This allows
-            downstream filtering or processing without losing the original vote matrix.
+        
+    pd.DataFrame
+        `adata.uns["votes"]`  
+        Raw vote events fetched from the API or CSV export.
+    dict
+        `adata.uns["votes_meta"]`  
+        Metadata about the sources of votes, e.g., API vs CSV.
+    pd.DataFrame
+        `adata.uns["statements"]`  
+        Raw statements/comments for the conversation.
+    dict
+        `adata.uns["statements_meta"]`  
+        Metadata about the statements source.
+    dict
+        `adata.uns["source"]`  
+        Basic information about the Polis source (base URL, conversation ID, report ID).
+    dict
+        `adata.uns["schema"]`  
+        High-level description of `X` and `votes`.
+    np.ndarray
+        `adata.X` (if `build_X=True`)  
+        Participant × statement vote matrix (rows = participants, columns = statements).
+    pd.DataFrame 
+        `adata.obs` (if `build_X=True`)  
+        Participant metadata (index = voter IDs).
+    pd.DataFrame 
+        `adata.var` (if `build_X=True`)  
+        Statement metadata (index = statement IDs).
+    anndata.AnnData 
+        `adata.raw` (if `build_X=True`)  
+        Snapshot of the first vote matrix and associated metadata. This allows
+        downstream filtering or processing without losing the original vote matrix.
 
     Notes
     -----
