@@ -6,6 +6,10 @@ repo_name: patcon/valency-anndata
 extra:
   logo_lg: assets/valency-anndata-logo-02.small.png
 
+extra_css:
+  - css/material.css
+  - css/mkdocstrings.css
+
 theme:
   name: material
   custom_dir: docs/overrides
