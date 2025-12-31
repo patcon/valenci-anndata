@@ -22,12 +22,11 @@ def schematic_diagram(
 
     This function supports two usage modes: **render mode** and **context-manager mode**.
 
-    -------------------------------------------------------------------------
     1\\. Render mode
-    -------------------------------------------------------------------------
+    --------------
     Render a diagram of `adata` immediately.
 
-    # Examples
+    **Examples**
 
     ```py
     val.viz.schematic_diagram(adata)
@@ -46,7 +45,7 @@ def schematic_diagram(
     val.viz.schematic_diagram(adata, diff_from=adata_snapshot)
     ```
 
-    # Behavior
+    **Behavior**
 
     - Visualizes `adata` structure (`X`, `obs`, `var`, `layers`, `obsm`).
     - If `diff_from` is provided:
@@ -57,19 +56,18 @@ def schematic_diagram(
         - No diff highlighting is applied.
     - The diagram is displayed inline (notebooks) or in a browser (script).
 
-    -------------------------------------------------------------------------
     2\\. Context-manager mode
-    -------------------------------------------------------------------------
+    -----------------------
     Capture a snapshot on entering a `with` block, rendering a diff on exit.
 
-    # Example
+    **Examples**
 
     ```py
     with val.viz.schematic_diagram(diff_from=adata):
         val.tools.some_transformation(adata, inplace=True)
     ```
 
-    # Behavior
+    **Behavior**
 
     - `diff_from` must be provided; `adata` must be omitted.
     - On entry, a snapshot of `diff_from` is recorded.
