@@ -6,3 +6,6 @@ charset = utf-8
 [*.{md,markdown}]
 indent_size = 4
 max_line_length = off
+
+[*.bib]
+indent_size = 2

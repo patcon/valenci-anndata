@@ -1,6 +1,6 @@
 Since we take inspiration from the `scanpy` tool in our data structure and conventions, many of its methods can be used on our vote matrix data.
 
-For convenience, we make all `scanpy`'s methods available like so:
+For convenience, we make all `scanpy`'s [next](../../references/#fn:Wolf2018)[@Wolf2018] methods available like so:
 
 ```py hl_lines="3"
 import valency_anndata as val

@@ -1,0 +1,7 @@
+.footnote {
+    display: none;
+}
+
+.full-bibliography-marker + .footnote {
+    display: unset;
+}
