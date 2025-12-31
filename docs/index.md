@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # Introduction
 
 **valency-anndata** (pronounced "valencian data") is an experimental toolkit for exploration of vote matrices of "valence data" (_participants x statements_), also known as _polislike_ data.
