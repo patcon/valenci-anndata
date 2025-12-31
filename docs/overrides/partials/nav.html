@@ -58,7 +58,7 @@
     <!-- START: VALENCY-ANNDATA CUSTOMIZATION -->
     {% if config.extra.logo_lg %}
       <a href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}">
-        <img src="{{ config.extra.logo_lg | url }}" width="100%" alt="{{ config.site_name }} logo">
+        <img src="{{ config.extra.logo_lg | url }}" width="100%" alt="{{ config.site_name | e }} logo">
       </a>
     {% else %}
       {{ config.site_name }}
