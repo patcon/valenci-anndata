@@ -2,7 +2,11 @@
 
 ## `valency-anndata` methods
 
-### ::: valency_anndata.viz.schematic_diagram
+<!-- Need to do this due to something unconventional we're doing with this module. -->
+<!-- TODO: Figure out what's going on here. -->
+### ::: valency_anndata.viz.schematic_diagram.schematic_diagram
+    options:
+        heading: valency_anndata.viz.schematic_diagram
 
 ### ::: valency_anndata.viz.langevitour
 
