@@ -74,6 +74,8 @@ plugins:
       python:
         paths: [ src ]
         inventories:
+          - https://docs.python.org/3/objects.inv
+          - https://numpy.org/doc/stable/objects.inv
           - https://scanpy.readthedocs.io/en/stable/objects.inv
           - https://anndata.readthedocs.io/en/stable/objects.inv
         options:
