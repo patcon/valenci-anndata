@@ -40,8 +40,10 @@ dev = [
     "ipykernel>=7.1.0",
     "itables>=2.6.2",
     "mkdocs>=1.6.1",
+    "mkdocs-bibtex>=4.4.0",
     "mkdocs-material>=9.7.1",
     "mkdocstrings-python>=2.0.1",
     "nbconvert>=7.16.6",
+    "pypandoc-binary>=1.16.2",
     "ruff>=0.14.10",
 ]
