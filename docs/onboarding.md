@@ -53,3 +53,30 @@ Polislike pipelines require 2 algorithms, and a 3rd optional one:
         - participant x statement matrix. response = vote reaction.
         - binary valenced (- or +), unit magnitide (0 or 1).
         - Response are zeros and "missing" (`NaN`), with clear distinction.
+
+## Glossary
+
+- vote data. valence data. polislike data.
+    - data vs matrix?
+- perspective map. perspective landscape.
+    - constrast to "opinion map".
+- participants. rows. observations. samples.
+- statements/comments. columns. variables. features. stimuli?
+- reactions. votes.
+- imputation. blank-filling. missing. NaN.
+- reducer. dimensional reduction.
+- clustering. community detection.
+    - labels.
+- scikit learn.
+    - estimator.
+- anndata.
+- single-cell omics. transcriptomics. gene expression. transcripts.
+    - scverse.
+        - scanpy.
+- red-dwarf
+- machine learning vs large-language models
+- others?
+    - agora
+    - polisNL. partici.app.
+    - Polis EU
+    - DigiFinland. Voxit.
