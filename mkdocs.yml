@@ -36,6 +36,7 @@ nav:
   - Tutorials:
     - Basic Polis Pipeline: tutorials/basic-polis.md
     - Kitchen Sink: tutorials/kitchen-sink.md
+  - Technical Onboarding: onboarding.md
   - API Reference:
     - Datasets: api/datasets.md
     - Preprocessing: api/preprocessing.md
