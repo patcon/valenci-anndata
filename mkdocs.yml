@@ -36,6 +36,7 @@ nav:
   - Tutorials:
     - Basic Polis Pipeline: tutorials/basic-polis.md
     - Kitchen Sink: tutorials/kitchen-sink.md
+  - Contributor Log: https://docs.google.com/document/d/1TG8vDGUZLVFM6ziRjvoU-ed11QvTLau_FjG8omv3gGc/edit?tab=t.0
   - Technical Onboarding: onboarding.md
   - API Reference:
     - Datasets: api/datasets.md
