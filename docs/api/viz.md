@@ -11,6 +11,8 @@
 
 ### ::: valency_anndata.viz.langevitour
 
+### ::: valency_anndata.viz.voter_vignette_browser
+
 ## `scanpy` methods (inherited)
 
 !!! note

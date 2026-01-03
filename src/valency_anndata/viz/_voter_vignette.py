@@ -2,29 +2,37 @@ from anndata import AnnData
 
 def voter_vignette_browser(adata: AnnData) -> None:
     """
-    Interactive browser showing a single participant's voting activity over time
-    alongside statements they authored.
+    Interactive browser for quickly surveying many voting timelines of random
+    participants alongside statements they authored.
 
-    Assumptions:
+    Parameters
+    ----------
+    adata:
+        An AnnData object loaded from a Polis conversation.<br/>
+        (See Assumptions below)
 
-        - Votes are stored in `adata.uns["votes"]` with columns:
-            - voter-id
-            - vote (-1, 0, 1)
-            - timestamp (seconds since epoch)
+    Assumptions
+    -----------
 
-        - Statements are stored in `adata.var` with columns:
-            - participant_id_authored
-            - created_date (milliseconds since epoch)
-            - content
-            - moderation_state (optional, -1/0/1)
+    - Votes are stored in `adata.uns["votes"]` with columns:
+        - `voter-id`
+        - `vote` (-1, 0, 1)
+        - `timestamp` (seconds since epoch)
 
-    Behavior:
+    - Statements are stored in `adata.var` with columns:
+        - `participant_id_authored`
+        - `created_date` (milliseconds since epoch)
+        - `content`
+        - `moderation_state` (optional, -1/0/1)
 
-        - Renders a dropdown to select a user, with buttons for random voter or commenter.
-        - Plots votes over time with colors (red/neutral/green).
-        - Draws vertical bars for authored statements with moderation-state coloring.
-        - Displays statements below the plot in submission order.
-        - Warns if vote or statement timestamps appear out of expected ranges.
+    Behavior
+    --------
+
+    - Renders a dropdown to select a user, with buttons for random voter or commenter.
+    - Plots votes over time with colors (red/neutral/green).
+    - Draws vertical bars for authored statements with moderation-state coloring.
+    - Displays statements below the plot in submission order.
+    - Warns if vote or statement timestamps appear out of expected ranges.
     """
     import random
     import pandas as pd
