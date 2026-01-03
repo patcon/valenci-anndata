@@ -114,9 +114,11 @@ def load(source: str, *, translate_to: Optional[str] = None, build_X: bool = Tru
         Defaults to None (no translation).
 
     build_X : bool, default True
-        If True, constructs a participant × statement vote matrix from the raw votes
-        using `rebuild_vote_matrix()`. This populates `adata.X`, `adata.obs`, and `adata.var`.
-        After the first build, a snapshot of this initial matrix is stored in `adata.raw`.
+        If True, constructs a participant × statement vote matrix from the raw
+        votes using `rebuild_vote_matrix()`. This populates `adata.obs`,
+        `adata.var`, and `adata.X` (with a copy in
+        `adata.layers['raw_sparse']`). After the first build, a snapshot of this
+        initial matrix is stored in `adata.raw`.
 
     Returns
     -------
