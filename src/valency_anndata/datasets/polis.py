@@ -172,6 +172,8 @@ def load(source: str, *, translate_to: Optional[str] = None, build_X: bool = Tru
     if build_X:
         rebuild_vote_matrix(adata, trim_rule=1.0, inplace=True)
         adata.raw = adata.copy()
+        # Store a copy in case we bring something else into X workspace later.
+        adata.layers["raw_sparse"] = adata.X # type: ignore[arg-type]
 
     _populate_var_statements(adata, translate_to=translate_to)
 
