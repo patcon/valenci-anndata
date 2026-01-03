@@ -1,7 +1,7 @@
 import asyncio
 import re
 import textwrap
-import anndata as ad
+from anndata import AnnData
 import pandas as pd
 from dataclasses import dataclass
 from googletrans import Translator
@@ -82,7 +82,7 @@ def _parse_polis_source(source: str):
     raise ValueError(f"Unrecognized Polis source format: {source}")
 
 
-def load(source: str, *, translate_to: Optional[str] = None, build_X: bool = True) -> ad.AnnData:
+def load(source: str, *, translate_to: Optional[str] = None, build_X: bool = True) -> AnnData:
     """
     Load a Polis conversation or report into an AnnData object.
 
@@ -185,7 +185,7 @@ def load(source: str, *, translate_to: Optional[str] = None, build_X: bool = Tru
 
 
 def _load_raw_polis_data(source):
-    adata = ad.AnnData()
+    adata = AnnData()
 
     convo_src = _parse_polis_source(source)
     client = PolisClient(base_url=convo_src.base_url)
@@ -368,7 +368,7 @@ def translate_texts(texts: List[str], dest_lang: str) -> List[str]:
     return run_async(_translate_texts_async(texts, dest_lang))
 
 def translate_statements(
-    adata: ad.AnnData,
+    adata: AnnData,
     translate_to: Optional[str],
     inplace: bool = True
 ) -> Optional[list[str]]:
