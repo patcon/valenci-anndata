@@ -1,7 +1,8 @@
-site_name: valency-anndata
+site_name: Valency Annotated Data Analysis
 site_url: https://patcon.github.io/valency-anndata
 repo_url: https://github.com/patcon/valency-anndata
 repo_name: patcon/valency-anndata
+site_description: An experimental toolkit for exploring polislike "valence data" in Python notebooks.
 
 extra:
   logo_lg: assets/valency-anndata-logo-02.small.png
@@ -9,12 +10,14 @@ extra:
 extra_css:
   - css/material.css
   - css/mkdocstrings.css
+  - css/custom.css
 
 theme:
   name: material
   custom_dir: docs/overrides
   palette:
-    primary: cyan
+    primary: custom
+    # primary: cyan
   icon:
     logo: material/atom-variant
     repo: simple/github
@@ -70,6 +73,14 @@ markdown_extensions:
       permalink: true
 
 plugins:
+- meta
+- social:
+    cards_layout_options:
+      background_image: docs/assets/valency-anndata-flow.alpha.logo.png
+      background_color: "#ffffff"
+      color: "#5FB9C4"
+      # background_color: transparent
+      logo: docs/assets/valency-anndata-logo-02.small.png
 - mkdocstrings:
     default_handler: python
     handlers:
