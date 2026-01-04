@@ -33,6 +33,16 @@ def voter_vignette_browser(adata: AnnData) -> None:
     - Draws vertical bars for authored statements with moderation-state coloring.
     - Displays statements below the plot in submission order.
     - Warns if vote or statement timestamps appear out of expected ranges.
+
+    Examples
+    --------
+
+    ```py
+    adata = val.datasets.polis.load("https://pol.is/report/r29kkytnipymd3exbynkd", translate_to="en")
+
+    val.viz.voter_vignette_browser(adata)
+    ```
+    <img src="../../assets/documentation-examples/viz--voter-vignette-browser.png">
     """
     import random
     import pandas as pd
