@@ -37,6 +37,19 @@ def langevitour(
     **kwargs
         Passed through to `Langevitour`.
         See R docs: https://logarithmic.net/langevitour/reference/langevitour.html#arguments
+
+    Examples
+    --------
+
+    ```py
+    val.viz.langevitour(
+        adata,
+        use_reps=["X_umap", "X_pca[:10]"],
+        color="leiden",
+        initial_axes=["X_umap[0]", "X_umap[1]"],
+    )
+    ```
+    <img src="../../assets/documentation-examples/viz--langevitour--axis-gradient.png">
     """
     import warnings
 
