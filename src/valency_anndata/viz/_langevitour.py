@@ -25,13 +25,17 @@ def langevitour(
     adata
         AnnData object.
     use_reps
-        Representations to include, e.g. ["X_pca[:10]", "X_umap[:2]"].
+        Representations to include, `X_foo` for all, and `X_bar[:10]` for subset (the first 10).
+
+        e.g. `["X_pca[:10]", "X_umap"]`.
     color
         obs column for grouping / coloring.
     scale
         obs column for point scaling.
     initial_axes
-        Set up to 3 initial axes xyz, e.g. ["U_umap[:2]", "X_pca[0]"]
+        Set up to 3 axes, initially locked in place along XYZ axes (these can be moved). Each must be specified with an exact index, not ranges.
+
+        e.g. `["X_umap[0]", "X_umap[1]"]` or `["X_pca[0]", "X_pca[1]", "X_pca[2]"]`
     point_size
         Base point size.
     **kwargs
