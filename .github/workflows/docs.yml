@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - social-share-cards
   workflow_dispatch:
 
 permissions:
