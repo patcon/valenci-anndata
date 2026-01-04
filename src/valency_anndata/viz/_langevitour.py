@@ -36,7 +36,7 @@ def langevitour(
         Base point size.
     **kwargs
         Passed through to `Langevitour`.
-        See R docs: https://logarithmic.net/langevitour/reference/langevitour.html#arguments
+        See R docs: [https://logarithmic.net/langevitour/reference/langevitour.html](https://logarithmic.net/langevitour/reference/langevitour.html#arguments)
 
     Examples
     --------
