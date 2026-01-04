@@ -4,12 +4,14 @@ from scanpy.plotting._tools.scatterplots import (
     umap,
 )
 from ._langevitour import langevitour
+from ._voter_vignette import voter_vignette_browser
 from .schematic_diagram import schematic_diagram
 
 
 __all__ = [
     "langevitour",
     "schematic_diagram",
+    "voter_vignette_browser",
 
     # Simple re-export of scanpy.
     "embedding",
