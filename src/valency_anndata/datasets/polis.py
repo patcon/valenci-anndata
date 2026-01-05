@@ -40,13 +40,11 @@ def _parse_polis_source(source: str):
     # ───────────────────────────────────────────
     path = Path(source)
     if path.exists() and path.is_dir():
-        votes = path / "votes.csv"
-        comments = path / "comments.csv"
-
-        if not votes.exists() or not comments.exists():
-            raise ValueError(
-                f"Directory {path} must contain votes.csv and comments.csv"
-            )
+        try:
+            _find_single_csv(path, "votes.csv")
+            _find_single_csv(path, "comments.csv")
+        except (FileNotFoundError, ValueError) as e:
+            raise ValueError(str(e)) from None
 
         return PolisSource(
             kind="local",
@@ -76,6 +74,7 @@ def _parse_polis_source(source: str):
             conversation_id = parts[0]
 
         return PolisSource(
+            kind="report" if report_id else "api",
             base_url=base_url,
             report_id=report_id,
             conversation_id=conversation_id,
@@ -87,6 +86,7 @@ def _parse_polis_source(source: str):
     # Starts with digit → conversation_id
     if CONVO_RE.match(source):
         return PolisSource(
+            kind="api",
             base_url=DEFAULT_BASE,
             report_id=None,
             conversation_id=source,
@@ -95,12 +95,24 @@ def _parse_polis_source(source: str):
     # Starts with "r" → report_id
     if REPORT_RE.match(source):
         return PolisSource(
+            kind="report",
             base_url=DEFAULT_BASE,
             report_id=source,
             conversation_id=None,
         )
 
     raise ValueError(f"Unrecognized Polis source format: {source}")
+
+def _find_single_csv(path: Path, suffix: str) -> Path:
+    matches = sorted(path.glob(f"*{suffix}"))
+    if not matches:
+        raise FileNotFoundError(f"No *{suffix} file found in {path}")
+    if len(matches) > 1:
+        raise ValueError(
+            f"Multiple *{suffix} files found in {path}: "
+            + ", ".join(p.name for p in matches)
+        )
+    return matches[0]
 
 
 def load(source: str, *, translate_to: Optional[str] = None, build_X: bool = True) -> AnnData:
@@ -122,6 +134,9 @@ def load(source: str, *, translate_to: Optional[str] = None, build_X: bool = Tru
         - Bare IDs:
             - Conversation ID (starts with a digit), e.g., `4asymkcrjf`
             - Report ID (starts with 'r'), e.g., `r4zdxrdscmukmkakmbz3k`
+        - Local directory containing CSV exports:
+            - *votes.csv
+            - *comments.csv
 
         The function will automatically parse the source to determine whether
         it refers to a conversation or report and fetch the appropriate data.
@@ -212,10 +227,16 @@ def _load_from_local_path(convo_src: PolisSource) -> AnnData:
 
     adata = AnnData()
 
+    votes_path = _find_single_csv(path, "votes.csv")
+    comments_path = _find_single_csv(path, "comments.csv")
+
+    votes = pd.read_csv(votes_path)
+    statements = pd.read_csv(comments_path)
+
     # ───────────────────────────────────────────
     # Votes
     # ───────────────────────────────────────────
-    votes = pd.read_csv(path / "votes.csv")
+
     votes["source"] = "local_csv"
     votes["source_id"] = str(path)
 
@@ -236,7 +257,6 @@ def _load_from_local_path(convo_src: PolisSource) -> AnnData:
     # ───────────────────────────────────────────
     # Statements
     # ───────────────────────────────────────────
-    statements = pd.read_csv(path / "comments.csv")
 
     # Normalize to Polis schema
     if "tid" not in statements.columns:
@@ -380,22 +400,17 @@ def _load_from_polis(convo_src: PolisSource):
         "votes": "raw vote events",
     }
 
-    _print_attribution_text(convo_src)
+    _maybe_print_attribution(convo_src)
 
     return adata
 
-def _print_attribution_text(convo_src):
+def _maybe_print_attribution(convo_src: PolisSource):
     """
     Print attribution text to satisfy Creative Commons license.
     """
-    report_id = getattr(convo_src, "report_id", None)
-    conversation_id = getattr(convo_src, "conversation_id", None)
+    if not (convo_src.report_id or convo_src.conversation_id):
+        return
 
-    if not report_id and not conversation_id:
-        raise ValueError(
-            "Cannot generate attribution text: neither "
-            "`convo_src.report_id` nor `convo_src.conversation_id` is set."
-        )
     base = (
         "Data was gathered using the Polis software "
         "(see: https://compdemocracy.org/polis and "
@@ -404,14 +419,14 @@ def _print_attribution_text(convo_src):
         "The Computational Democracy Project."
     )
 
-    if report_id:
+    if convo_src.report_id:
         tail = (
             "The data and more information about how the data was collected "
-            f"can be found at the following link: https://pol.is/report/{report_id}"
+            f"can be found at the following link: https://pol.is/report/{convo_src.report_id}"
         )
     else:
         tail = (
-            f"The data was retrieved from https://pol.is/{conversation_id} "
+            f"The data was retrieved from https://pol.is/{convo_src.conversation_id} "
             "and more information can be found at "
             "https://compdemocracy.org/Polis-Conversation-Data/"
         )
