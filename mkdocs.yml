@@ -78,7 +78,7 @@ plugins:
       # background_image: docs/assets/valency-anndata-flow.alpha.png
       background_image: docs/assets/valency-anndata-logo-02.cyan.svg
       # This is the 6-char cyan hex color, with 2-char alpha hex value appended.
-      background_color: "#00BDD6dd"
+      background_color: "#00BDD6ee"
       logo: docs/assets/valency-anndata-logo-02.white.no-text.svg
 - mkdocstrings:
     default_handler: python
