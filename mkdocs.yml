@@ -33,7 +33,7 @@ theme:
     - navigation.tracking
 
 nav:
-  - index.md
+  - Welcome: index.md
   - installation.md
   - Tutorials:
     - Basic Polis Pipeline: tutorials/basic-polis.md

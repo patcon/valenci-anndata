@@ -1,6 +1,9 @@
 ---
 hide:
   - toc
+social:
+  cards_layout_options:
+    title: "Welcome to valency-anndata"
 ---
 
 # Welcome to valency-anndata
