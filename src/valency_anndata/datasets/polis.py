@@ -204,6 +204,33 @@ def load(source: str, *, translate_to: Optional[str] = None, build_X: bool = Tru
     text and `adata.var["language_current"]` is set to the target language.
     - The vote matrix is derived from the most recent votes per participant per statement,
       sorted by timestamp.
+
+    Examples
+    --------
+
+    Load data from a report or conversation ID or URL.
+
+    ```py
+    adata = val.datasets.polis.load("https://pol.is/report/r2dfw8eambusb8buvecjt")
+    adata = val.datasets.polis.load("6rphtwwfn4")
+    ```
+
+    Load data from an alternative Polis instance via URL.
+
+    ```py
+    adata = val.datasets.polis.load("https://polis.tw/6rphtwwfn4")
+    ```
+
+    Load data from a path containing Polis CSV export files.
+
+    ```sh
+    $ ls exports/my_conversation_2024_11_03
+    comments.csv votes.csv summary.csv ...
+    ```
+
+    ```py
+    adata = val.datasets.polis.load("./exports/my_conversation_2024_11_03")
+    ```
     """
     adata = _load_raw_polis_data(source)
 
