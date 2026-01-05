@@ -6,8 +6,9 @@ import pandas as pd
 from dataclasses import dataclass
 from googletrans import Translator
 from io import StringIO
+from pathlib import Path
 from polis_client import PolisClient
-from typing import List, Optional
+from typing import List, Literal, Optional
 from urllib.parse import urlparse
 
 from ..preprocessing import rebuild_vote_matrix
@@ -21,9 +22,11 @@ CONVO_RE  = re.compile(r"^[0-9][a-z0-9]{8,}$")  # e.g. 4asymkcrjf (starts with d
 
 @dataclass
 class PolisSource:
-    base_url: str
+    kind: Literal["api", "report", "local"]
+    base_url: str | None = None
     conversation_id: str | None = None
     report_id: str | None = None
+    path: Path | None = None
 
 def _parse_polis_source(source: str):
     """
@@ -32,6 +35,24 @@ def _parse_polis_source(source: str):
         report_id
         conversation_id
     """
+    # ───────────────────────────────────────────
+    # 0. Local directory case
+    # ───────────────────────────────────────────
+    path = Path(source)
+    if path.exists() and path.is_dir():
+        votes = path / "votes.csv"
+        comments = path / "comments.csv"
+
+        if not votes.exists() or not comments.exists():
+            raise ValueError(
+                f"Directory {path} must contain votes.csv and comments.csv"
+            )
+
+        return PolisSource(
+            kind="local",
+            path=path,
+        )
+
     source = source.strip()
 
     # ───────────────────────────────────────────
@@ -185,11 +206,82 @@ def load(source: str, *, translate_to: Optional[str] = None, build_X: bool = Tru
 
     return adata
 
+def _load_from_local_path(convo_src: PolisSource) -> AnnData:
+    path = convo_src.path
+    assert path is not None
 
-def _load_raw_polis_data(source):
     adata = AnnData()
 
+    # ───────────────────────────────────────────
+    # Votes
+    # ───────────────────────────────────────────
+    votes = pd.read_csv(path / "votes.csv")
+    votes["source"] = "local_csv"
+    votes["source_id"] = str(path)
+
+    votes.sort_values("timestamp", inplace=True)
+
+    adata.uns["votes"] = votes
+    adata.uns["votes_meta"] = {
+        "sources": {
+            "local": {
+                "via": "filesystem",
+                "path": str(path),
+                "retrieved_at": pd.Timestamp.utcnow().isoformat(),
+            }
+        },
+        "sorted_by": "timestamp",
+    }
+
+    # ───────────────────────────────────────────
+    # Statements
+    # ───────────────────────────────────────────
+    statements = pd.read_csv(path / "comments.csv")
+
+    # Normalize to Polis schema
+    if "tid" not in statements.columns:
+        raise ValueError("comments.csv must contain a 'tid' column")
+
+    adata.uns["statements"] = (
+        statements
+            .set_index("tid", drop=False)
+    )
+
+    adata.uns["statements_meta"] = {
+        "source": {
+            "via": "filesystem",
+            "path": str(path),
+            "retrieved_at": pd.Timestamp.utcnow().isoformat(),
+        }
+    }
+
+    adata.uns["source"] = {
+        "kind": "local",
+        "path": str(path),
+    }
+
+    adata.uns["schema"] = {
+        "X": "participant × statement vote matrix (derived)",
+        "votes": "raw vote events",
+    }
+
+    return adata
+
+def _load_raw_polis_data(source):
     convo_src = _parse_polis_source(source)
+    if convo_src.kind == "local":
+        return _load_from_local_path(convo_src)
+
+    if convo_src.kind in {"api", "report"}:
+        return _load_from_polis(convo_src)
+
+    raise AssertionError("Unreachable")
+
+def _load_from_polis(convo_src: PolisSource):
+    assert convo_src.base_url is not None
+
+    adata = AnnData()
+
     client = PolisClient(base_url=convo_src.base_url)
     # client = PolisClient(base_url=convo_meta.base_url, xid="foobar")
 
