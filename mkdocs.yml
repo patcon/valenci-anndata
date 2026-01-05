@@ -2,7 +2,7 @@ site_name: Valency Annotated Data Analysis
 site_url: https://patcon.github.io/valency-anndata
 repo_url: https://github.com/patcon/valency-anndata
 repo_name: patcon/valency-anndata
-site_description: An experimental toolkit for exploring polislike "valence data" in Python notebooks.
+site_description: A toolkit for exploring polislike valence data in Python notebooks.
 
 extra:
   logo_lg: assets/valency-anndata-logo-02.cyan.svg
