@@ -1,4 +1,5 @@
 import asyncio
+import warnings
 import re
 import textwrap
 from anndata import AnnData
@@ -102,6 +103,41 @@ def _parse_polis_source(source: str):
         )
 
     raise ValueError(f"Unrecognized Polis source format: {source}")
+
+def _fill_missing_fields_from_api(statements: pd.DataFrame, conversation_id: str, client: PolisClient, fields=("is-seed", "is-meta")) -> pd.DataFrame:
+    """
+    Fill missing columns in `statements` from the API, only for specified fields.
+    Warns the user if any fields are filled.
+    """
+    missing_fields = [col for col in fields if col not in statements.columns or statements[col].isnull().all()]
+    if not missing_fields:
+        return statements
+
+    api_statements = client.get_comments(conversation_id=conversation_id)
+    if not api_statements:
+        warnings.warn(f"Missing fields {', '.join(missing_fields)} but API fetch returned no statements.")
+        return statements
+
+    api_df = pd.DataFrame([s.to_dict() for s in api_statements]).rename(columns={
+        "tid": "comment-id",
+        "pid": "author-id",
+        "txt": "comment-body",
+        "created": "timestamp",
+        "mod": "moderated",
+        "is_seed": "is-seed",
+        "is_meta": "is-meta",
+    }).set_index("comment-id", drop=False)
+
+    # Fill only the missing fields
+    for col in missing_fields:
+        if col in api_df.columns:
+            statements[col] = statements[col].combine_first(api_df[col])
+
+    warnings.warn(
+        f"The following fields were missing and have been filled from the API: {', '.join(missing_fields)}"
+    )
+
+    return statements
 
 def _find_single_csv(path: Path, suffix: str) -> Path:
     matches = sorted(path.glob(f"*{suffix}"))
@@ -248,67 +284,6 @@ def load(source: str, *, translate_to: Optional[str] = None, build_X: bool = Tru
 
     return adata
 
-def _load_from_local_path(convo_src: PolisSource) -> AnnData:
-    path = convo_src.path
-    assert path is not None
-
-    adata = AnnData()
-
-    votes_path = _find_single_csv(path, "votes.csv")
-    comments_path = _find_single_csv(path, "comments.csv")
-
-    votes = pd.read_csv(votes_path)
-    statements = pd.read_csv(comments_path)
-
-    # ───────────────────────────────────────────
-    # Votes
-    # ───────────────────────────────────────────
-
-    votes["source"] = "local_csv"
-    votes["source_id"] = str(path)
-
-    votes.sort_values("timestamp", inplace=True)
-
-    adata.uns["votes"] = votes
-    adata.uns["votes_meta"] = {
-        "sources": {
-            "local": {
-                "via": "filesystem",
-                "path": str(path),
-                "retrieved_at": pd.Timestamp.utcnow().isoformat(),
-            }
-        },
-        "sorted_by": "timestamp",
-    }
-
-    # ───────────────────────────────────────────
-    # Statements
-    # ───────────────────────────────────────────
-    adata.uns["statements"] = (
-        statements
-            .set_index("comment-id", drop=False)
-    )
-
-    adata.uns["statements_meta"] = {
-        "source": {
-            "via": "filesystem",
-            "path": str(path),
-            "retrieved_at": pd.Timestamp.utcnow().isoformat(),
-        }
-    }
-
-    adata.uns["source"] = {
-        "kind": "local",
-        "path": str(path),
-    }
-
-    adata.uns["schema"] = {
-        "X": "participant × statement vote matrix (derived)",
-        "votes": "raw vote events",
-    }
-
-    return adata
-
 def _load_raw_polis_data(source):
     convo_src = _parse_polis_source(source)
     if convo_src.kind == "local":
@@ -319,86 +294,99 @@ def _load_raw_polis_data(source):
 
     raise AssertionError("Unreachable")
 
-def _load_from_polis(convo_src: PolisSource):
-    assert convo_src.base_url is not None
+def _load_from_local_path(convo_src: PolisSource) -> AnnData:
+    path = convo_src.path
+    assert path is not None
+
+    votes_path = _find_single_csv(path, "votes.csv")
+    comments_path = _find_single_csv(path, "comments.csv")
+
+    votes = pd.read_csv(votes_path)
+    votes["source"] = "local_csv"
+    votes["source_id"] = str(path)
+
+    statements = pd.read_csv(comments_path)
 
     adata = AnnData()
+    return _load_votes_and_statements(adata, votes, statements, convo_src)
 
+def _load_from_polis(convo_src: PolisSource) -> AnnData:
+    assert convo_src.base_url is not None
     client = PolisClient(base_url=convo_src.base_url)
-    # client = PolisClient(base_url=convo_meta.base_url, xid="foobar")
-
-    vote_frames = []
-    vote_sources = {}
 
     # ───────────────────────────────────────────
     # Load votes
     # ───────────────────────────────────────────
     if convo_src.report_id:
-        votes_csv_text = client.get_export_file(
-            filename="votes.csv",
-            report_id=convo_src.report_id,
-        )
-        df = pd.read_csv(StringIO(votes_csv_text))
-        df["source"] = "csv"
-        df["source_id"] = convo_src.report_id
-        df.sort_values(by="timestamp", ascending=True, inplace=True)
-
-        vote_frames.append(df)
-
-        vote_sources["csv"] = {
-            "via": "live_csv",
-            "report_id": convo_src.report_id,
-            "base_url": convo_src.base_url,
-            "retrieved_at": pd.Timestamp.utcnow().isoformat(),
-        }
+        votes_csv_text = client.get_export_file(filename="votes.csv", report_id=convo_src.report_id)
+        votes = pd.read_csv(StringIO(votes_csv_text))
+        votes["source"] = "csv"
+        votes["source_id"] = convo_src.report_id
+        votes.sort_values("timestamp", inplace=True)
 
         report = client.get_report(report_id=convo_src.report_id)
-        assert report is not None
         convo_src.conversation_id = report.conversation_id or None
 
     elif convo_src.conversation_id:
         votes_list = client.get_all_votes_slow(conversation_id=convo_src.conversation_id)
-        df = pd.DataFrame([v.to_dict() for v in votes_list])
-        df["source"] = "api"
-        df["source_id"] = convo_src.conversation_id
-        df.rename(columns={
-            "modified": "timestamp",
-            "pid": "voter-id",
-            "tid": "comment-id",
-        }, inplace=True)
+        votes = pd.DataFrame([v.to_dict() for v in votes_list])
+        votes.rename(columns={"modified": "timestamp", "pid": "voter-id", "tid": "comment-id"}, inplace=True)
+        votes["source"] = "api"
+        votes["source_id"] = convo_src.conversation_id
+        votes.sort_values("timestamp", inplace=True)
 
-        vote_frames.append(df)
-
-        vote_sources["api"] = {
-            "via": "live_api",
-            "conversation_id": convo_src.conversation_id,
-            "base_url": convo_src.base_url,
-            "retrieved_at": pd.Timestamp.utcnow().isoformat(),
-        }
-        df.sort_values(by="timestamp", ascending=True, inplace=True)
-
-    if not vote_frames:
+    else:
         raise ValueError("No votes could be loaded")
 
-    votes = (
-        pd.concat(vote_frames, ignore_index=True)
-          .sort_values("timestamp", kind="stable")
-          .reset_index(drop=True)
-    )
+    # ───────────────────────────────────────────
+    # Load statements
+    # ───────────────────────────────────────────
+    statements = client.get_comments(conversation_id=convo_src.conversation_id) or []
+    statements_df = pd.DataFrame([s.to_dict() for s in statements])
 
+    adata = AnnData()
+    adata = _load_votes_and_statements(adata, votes, statements_df, convo_src)
+
+    _maybe_print_attribution(convo_src)
+    return adata
+
+def _load_votes_and_statements(
+    adata: AnnData,
+    votes: pd.DataFrame,
+    statements: pd.DataFrame,
+    convo_src: PolisSource,
+) -> AnnData:
+    """
+    Common path to populate adata.uns with votes and statements, normalizing columns
+    and storing metadata.
+    """
+    # ───────────────────────────────────────────
+    # Normalize votes
+    # ───────────────────────────────────────────
+    votes = votes.copy()
+    votes.sort_values("timestamp", inplace=True)
     adata.uns["votes"] = votes
+
     adata.uns["votes_meta"] = {
-        "sources": vote_sources,
+        "sources": {
+            convo_src.kind: {
+                "via": "filesystem" if convo_src.kind == "local" else "live_api" if convo_src.kind == "api" else "live_csv",
+                "conversation_id": convo_src.conversation_id,
+                "report_id": convo_src.report_id,
+                "path": str(convo_src.path) if convo_src.path else None,
+                "base_url": convo_src.base_url,
+                "retrieved_at": pd.Timestamp.utcnow().isoformat(),
+            }
+        },
         "sorted_by": "timestamp",
     }
 
-    statements = client.get_comments(conversation_id=convo_src.conversation_id)
-    assert statements is not None
+    # ───────────────────────────────────────────
+    # Normalize statements
+    # ───────────────────────────────────────────
+    statements = statements.copy()
 
-    df = pd.DataFrame([s.to_dict() for s in statements])
-
-    # Normalize API fields → canonical CSV-style fields
-    df = df.rename(columns={
+    rename_map = {
         "tid": "comment-id",
         "pid": "author-id",
         "txt": "comment-body",
@@ -406,33 +394,34 @@ def _load_from_polis(convo_src: PolisSource):
         "mod": "moderated",
         "is_seed": "is-seed",
         "is_meta": "is-meta",
-    })
+    }
+    statements.rename(columns={k: v for k, v in rename_map.items() if k in statements.columns}, inplace=True)
 
-    adata.uns["statements"] = df.set_index("comment-id", drop=False)
+    adata.uns["statements"] = statements.set_index("comment-id", drop=False)
 
     adata.uns["statements_meta"] = {
         "source": {
-            "via": "live_api",
+            "via": "filesystem" if convo_src.kind == "local" else "live_api" if convo_src.kind == "api" else "live_csv",
             "conversation_id": convo_src.conversation_id,
+            "report_id": convo_src.report_id,
+            "path": str(convo_src.path) if convo_src.path else None,
             "base_url": convo_src.base_url,
             "retrieved_at": pd.Timestamp.utcnow().isoformat(),
-        },
+        }
     }
 
-    pd.Timestamp.utcnow().isoformat()
-
     adata.uns["source"] = {
+        "kind": convo_src.kind,
         "base_url": convo_src.base_url,
         "conversation_id": convo_src.conversation_id,
         "report_id": convo_src.report_id,
+        "path": str(convo_src.path) if convo_src.path else None,
     }
 
     adata.uns["schema"] = {
         "X": "participant × statement vote matrix (derived)",
         "votes": "raw vote events",
     }
-
-    _maybe_print_attribution(convo_src)
 
     return adata
 
