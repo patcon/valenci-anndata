@@ -496,13 +496,13 @@ def _populate_var_statements(adata, translate_to: Optional[str] = None):
     adata.var["is_meta"] = (
         statements_aligned["is-meta"]
         if "is-meta" in statements_aligned.columns
-        else None
+        else pd.NA
     )
 
     adata.var["language_original"] = (
         statements_aligned["lang"]
         if "lang" in statements_aligned.columns
-        else None
+        else pd.NA
     )
 
     adata.var["language_current"] = adata.var["language_original"]
