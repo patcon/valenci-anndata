@@ -551,7 +551,7 @@ def translate_statements(
     statements_aligned.index = statements_aligned.index.astype(str)
     statements_aligned = statements_aligned.reindex(adata.var_names)
 
-    original_texts = statements_aligned["txt"].tolist()
+    original_texts = statements_aligned["comment-body"].tolist()
 
     # ───────────────────────────────────────────
     # NO-TRANSLATION PATH (explicit)
