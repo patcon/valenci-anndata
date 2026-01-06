@@ -23,6 +23,7 @@ dependencies = [
     "svgwrite>=1.4.3",
     "pacmap>=0.8.0",
     "ipywidgets>=8.1.8",
+    "huggingface-hub>=1.2.3",
 ]
 
 [build-system]
