@@ -284,14 +284,9 @@ def _load_from_local_path(convo_src: PolisSource) -> AnnData:
     # ───────────────────────────────────────────
     # Statements
     # ───────────────────────────────────────────
-
-    # Normalize to Polis schema
-    if "tid" not in statements.columns:
-        raise ValueError("comments.csv must contain a 'tid' column")
-
     adata.uns["statements"] = (
         statements
-            .set_index("tid", drop=False)
+            .set_index("comment-id", drop=False)
     )
 
     adata.uns["statements_meta"] = {
@@ -400,10 +395,20 @@ def _load_from_polis(convo_src: PolisSource):
     statements = client.get_comments(conversation_id=convo_src.conversation_id)
     assert statements is not None
 
-    adata.uns["statements"] = (
-        pd.DataFrame([s.to_dict() for s in statements])
-            .set_index("tid", drop=False)
-    )
+    df = pd.DataFrame([s.to_dict() for s in statements])
+
+    # Normalize API fields → canonical CSV-style fields
+    df = df.rename(columns={
+        "tid": "comment-id",
+        "pid": "author-id",
+        "txt": "comment-body",
+        "created": "timestamp",
+        "mod": "moderated",
+        "is_seed": "is-seed",
+        "is_meta": "is-meta",
+    })
+
+    adata.uns["statements"] = df.set_index("comment-id", drop=False)
 
     adata.uns["statements_meta"] = {
         "source": {
@@ -473,17 +478,36 @@ def format_attribution(text: str, *, width: int = 80) -> str:
 
 
 def _populate_var_statements(adata, translate_to: Optional[str] = None):
+    # Statements in adata.uns["statements"] use the Polis CSV export schema
+    # (comment-id, author-id, comment-body, is-seed, is-meta, etc.)
     statements_aligned = adata.uns["statements"].copy()
     statements_aligned.index = statements_aligned.index.astype(str)
     statements_aligned = statements_aligned.reindex(adata.var_names)
 
-    adata.var["content"] = statements_aligned["txt"]
-    adata.var["participant_id_authored"] = statements_aligned["pid"]
-    adata.var["created_date"] = statements_aligned["created"]
-    adata.var["is_seed"] = statements_aligned["is_seed"]
-    adata.var["is_meta"] = statements_aligned["is_meta"]
-    adata.var["moderation_state"] = statements_aligned["mod"]
-    adata.var["language_original"] = statements_aligned["lang"]
+    # Canonical Polis CSV-style fields
+    adata.var["content"] = statements_aligned["comment-body"]
+    adata.var["participant_id_authored"] = statements_aligned["author-id"]
+    adata.var["created_date"] = statements_aligned["timestamp"]
+    adata.var["moderation_state"] = statements_aligned["moderated"]
+
+    # Optional fields (may or may not be present)
+    adata.var["is_seed"] = (
+        statements_aligned["is-seed"]
+        if "is-seed" in statements_aligned.columns
+        else None
+    )
+
+    adata.var["is_meta"] = (
+        statements_aligned["is-meta"]
+        if "is-meta" in statements_aligned.columns
+        else None
+    )
+
+    adata.var["language_original"] = (
+        statements_aligned["lang"]
+        if "lang" in statements_aligned.columns
+        else None
+    )
 
     adata.var["language_current"] = adata.var["language_original"]
     adata.var["is_translated"] = False
