@@ -140,14 +140,30 @@ def _fill_missing_fields_from_api(statements: pd.DataFrame, conversation_id: str
     return statements
 
 def _find_single_csv(path: Path, suffix: str) -> Path:
+    """
+    Resolve a CSV file from a directory, preferring an exact filename match.
+
+    If `path / suffix` exists, it is returned immediately. Otherwise, the
+    directory is searched for files matching `*{suffix}`. An error is raised
+    if zero or multiple matches are found.
+    """
+    # 1. Prefer exact filename within directory
+    exact = path / suffix
+    if exact.is_file():
+        return exact
+
+    # 2. Fall back to suffix-based search
     matches = sorted(path.glob(f"*{suffix}"))
+
     if not matches:
         raise FileNotFoundError(f"No *{suffix} file found in {path}")
+
     if len(matches) > 1:
         raise ValueError(
             f"Multiple *{suffix} files found in {path}: "
             + ", ".join(p.name for p in matches)
         )
+
     return matches[0]
 
 
