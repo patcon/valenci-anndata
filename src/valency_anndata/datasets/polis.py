@@ -196,7 +196,7 @@ def load(source: str, *, translate_to: Optional[str] = None, build_X: bool = Tru
 
     translate_to : str or None, optional
         Target language code (e.g., "en", "fr", "es") for translating statement text.
-        If provided, the original statement text in `adata.uns["statements"]["txt"]`
+        If provided, the original statement text in `adata.uns["statements"]["comment-body"]`
         is translated and stored in `adata.var["content"]`. The `adata.var["language_current"]`
         field is updated to the target language, and `adata.var["is_translated"]` is set to True.
         Defaults to None (no translation).
@@ -545,7 +545,7 @@ def translate_statements(
     inplace: bool = True
 ) -> Optional[list[str]]:
     """
-    Translate statements in `adata.uns['statements']['txt']` into another language,
+    Translate statements in `adata.uns['statements']['comment-body']` into another language,
     or copy originals if translate_to is None.
 
     Parameters
