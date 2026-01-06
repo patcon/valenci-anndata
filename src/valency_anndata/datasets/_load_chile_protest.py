@@ -1,14 +1,14 @@
 from typing import Optional
-from huggingface_hub import snapshot_download
 import valency_anndata as val
 
-def aufstehen(
+def chile_protest(
     translate_to: Optional[str] = None,
 ):
     """
-    Polis conversation of 33k+ Germans, run by political party Aufstehen.
+    Polis conversation of 2,700+ Chileans during the 2019 #ChileDesperto protests.
 
-    This is largest Polis conversation run as of now, in fall 2018.
+    It was run informally by a single citizen, with minimal support
+    infrastructure, outreach strategy, or moderation process.
 
     See: <https://compdemocracy.org/Case-studies/2018-germany-aufstehen/>
 
@@ -31,10 +31,9 @@ def aufstehen(
     <https://github.com/compdemocracy/polis>) and is sub-licensed under CC BY
     4.0 with Attribution to The Computational Democracy Project. The data and
     more information about how the data was collected can be found at the
-    following link: <https://pol.is/report/r6xd526vyjyjrj9navxrj>
+    following link: <https://pol.is/report/r29kkytnipymd3exbynkd>
     """
-    export_dir = snapshot_download(repo_id="patcon/polis-aufstehen-2018", repo_type="dataset")
-    adata = val.datasets.polis.load(source=export_dir, translate_to=translate_to)
+    adata = val.datasets.polis.load("https://pol.is/report/r29kkytnipymd3exbynkd", translate_to=translate_to)
 
     return adata
 
