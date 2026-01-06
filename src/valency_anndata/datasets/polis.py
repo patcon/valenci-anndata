@@ -326,7 +326,8 @@ def _load_from_polis(convo_src: PolisSource) -> AnnData:
         votes.sort_values("timestamp", inplace=True)
 
         report = client.get_report(report_id=convo_src.report_id)
-        convo_src.conversation_id = report.conversation_id or None
+        if report:
+            convo_src.conversation_id = report.conversation_id or None
 
     elif convo_src.conversation_id:
         votes_list = client.get_all_votes_slow(conversation_id=convo_src.conversation_id)
