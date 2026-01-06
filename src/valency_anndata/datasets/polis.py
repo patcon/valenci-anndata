@@ -330,7 +330,12 @@ def _load_from_polis(convo_src: PolisSource) -> AnnData:
     elif convo_src.conversation_id:
         votes_list = client.get_all_votes_slow(conversation_id=convo_src.conversation_id)
         votes = pd.DataFrame([v.to_dict() for v in votes_list])
-        votes.rename(columns={"modified": "timestamp", "pid": "voter-id", "tid": "comment-id"}, inplace=True)
+        votes_rename_map = {
+            "modified": "timestamp",
+            "pid": "voter-id",
+            "tid": "comment-id",
+        }
+        votes.rename(columns=votes_rename_map, inplace=True)
         votes["source"] = "api"
         votes["source_id"] = convo_src.conversation_id
         votes.sort_values("timestamp", inplace=True)
@@ -386,7 +391,7 @@ def _load_votes_and_statements(
     # ───────────────────────────────────────────
     statements = statements.copy()
 
-    rename_map = {
+    statements_rename_map = {
         "tid": "comment-id",
         "pid": "author-id",
         "txt": "comment-body",
@@ -395,7 +400,7 @@ def _load_votes_and_statements(
         "is_seed": "is-seed",
         "is_meta": "is-meta",
     }
-    statements.rename(columns={k: v for k, v in rename_map.items() if k in statements.columns}, inplace=True)
+    statements.rename(columns={k: v for k, v in statements_rename_map.items() if k in statements.columns}, inplace=True)
 
     adata.uns["statements"] = statements.set_index("comment-id", drop=False)
 
