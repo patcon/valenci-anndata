@@ -306,6 +306,7 @@ def _load_from_local_path(convo_src: PolisSource) -> AnnData:
     votes["source_id"] = str(path)
 
     statements = pd.read_csv(comments_path)
+    # TODO: detect if is-seed and is-meta are missing, and augment if not
 
     adata = AnnData()
     return _load_votes_and_statements(adata, votes, statements, convo_src)
