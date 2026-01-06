@@ -13,6 +13,9 @@ def _zero_mask(
     if not inplace:
         adata = adata.copy()
 
+    if bool(adata.var["is_meta"].isna().any()):
+        raise ValueError("Your statements are missing is_meta data. Cannot create required zero_mask. Force all values to be False to override.")
+
     adata.var[key_added_var_mask] = adata.var.eval("~is_meta and moderation_state > -1")
 
     mask = adata.var[key_added_var_mask].to_numpy()
