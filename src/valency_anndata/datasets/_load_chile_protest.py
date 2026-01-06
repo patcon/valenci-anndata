@@ -10,10 +10,7 @@ def chile_protest(
     It was run informally by a single citizen, with minimal support
     infrastructure, outreach strategy, or moderation process.
 
-    See: <https://compdemocracy.org/Case-studies/2018-germany-aufstehen/>
-
-    The data is pulled from an archive at:
-    <https://huggingface.co/datasets/patcon/polis-aufstehen-2018>
+    See: <https://en.wikipedia.org/wiki/Social_Outburst_(Chile)>
 
     Note
     ----
