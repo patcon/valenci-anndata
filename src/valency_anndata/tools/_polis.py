@@ -67,6 +67,57 @@ def recipe_polis(
     key_added_kmeans: str = "kmeans_polis",
     inplace: bool = True,
 ):
+    """
+    Projects and clusters participants as of [[Small _et al._,
+    2021](http://dx.doi.org/10.6035/recerca.5516)]
+
+    Expects sparse vote matrix [`.X`][anndata.AnnData.X] with `{+1, 0, -1}`
+    and `NaN` values.
+
+    Recipe Steps
+    ------------
+
+    1. Masks out meta and moderated-out statements with zeros.
+    2. Imputes missing matrix votes with statement-wise means.
+    3. Runs standard PCA on the imputed matrix.
+    4. Runs sparsity-aware scaling on PCA projections.
+    5. Calculates a participant mask using 7-vote threshold.
+    6. On unmasked rows, calculates k-means clustering for 2 ≤ k ≤ 5,
+       selecting the optimal k via silhouette scores.
+    
+    Parameters
+    ----------
+
+    participant_vote_threshold :
+        Vote threshold at which each participant will be included in clustering.
+    key_added_pca :
+        If not specified, the PCA embedding is stored as
+        [`.obsm`][anndata.AnnData.obsm]`['X_pca_polis']`, the loadings as
+        [`.varm`][anndata.AnnData.varm]`['X_pca_polis']`, and the PCA parameters
+        in [`.uns`][anndata.AnnData.uns]`['X_pca_polis']`.
+        If specified, all are stored instead at `[key_added_pca]`.
+    key_added_kmeans :
+        [`.obs`][anndata.AnnData.obs] key under which to add the cluster labels.
+    inplace :
+        Perform computation inplace or return result.
+    
+    Returns
+    -------
+
+    .obsm['X_pca_polis' | key_added]
+        PCA representation of data.
+    .varm['X_pca_polis' | key_added]
+        The principal components containing the loadings.
+    .uns['X_pca_polis' | key_added]['variance_ratio']
+        Ratio of explained variance.
+    .uns['X_pca_polis' | key_added]['variance']
+        Explained variance, equivalent to the eigenvalues of the covariance matrix.
+    .obs['kmeans_polis' | key_added]
+        Array of dim (number of samples) that stores the subgroup id ('0', '1', …) for each cell.
+    .uns['kmeans_polis' | key_added]['params']
+        A dict with the values for the k-means parameters.
+    
+    """
     if not inplace:
         adata = adata.copy()
 
