@@ -59,6 +59,14 @@ def jscatter(
 
     scatter : JScatter
         ...
+
+    Examples
+    --------
+
+    ```py
+    scatter = val.viz.jscatter(adata, use_reps=["X_pca_polis", "X_pacmap"], color="kmeans_polis")
+    scatter.show()
+    ```
     """
     background = "#1E1E20" if dark_mode else None
 
@@ -108,6 +116,5 @@ def jscatter(
     toggle.observe(on_toggle, names="value")
 
     display(toggle)
-    scatter.show()
 
     return scatter

@@ -9,9 +9,11 @@
         heading: valency_anndata.viz.schematic_diagram
         show_overloads: false
 
-### ::: valency_anndata.viz.langevitour
-
 ### ::: valency_anndata.viz.voter_vignette_browser
+
+### ::: valency_anndata.viz.jscatter
+
+### ::: valency_anndata.viz.langevitour
 
 ## `scanpy` methods (inherited)
 
