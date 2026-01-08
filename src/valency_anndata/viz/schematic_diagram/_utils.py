@@ -83,13 +83,20 @@ def _show_svg(dwg, filename: Optional[str] = None) -> Optional[str]:
         f.write(svg_text)
         temp_svg_path = f.name
 
-    browser = get_default_browser_name()
-    if browser:
-        webbrowser.get(browser).open(f"file://{temp_svg_path}")
-        print(f"Opened in your default browser ({browser})")
-    else:
-        webbrowser.open(f"file://{temp_svg_path}")
-        print("Opened in your browser")
+    try:
+        browser = get_default_browser_name()
+        if browser:
+            webbrowser.get(browser).open(f"file://{temp_svg_path}")
+            print(f"Opened in your default browser ({browser})")
+        else:
+            webbrowser.open(f"file://{temp_svg_path}")
+            print("Opened in your browser")
+    except Exception as e:
+        # Headless / CI-safe behavior
+        print(
+            "SVG written to file but could not open a browser "
+            f"(likely headless environment): {temp_svg_path}"
+        )
 
 def diff_text_style(status: str | None) -> dict[str, str]:
     if status == "added":
