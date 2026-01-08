@@ -30,6 +30,8 @@ def obsm_to_df(
 
     return pd.concat(dfs, axis=1)
 
+# TODO: Single representation case: no button
+# TODO: kind="single" vs kind="multi"
 def jscatter(
     adata: AnnData,
     use_reps: list[str] = [],
