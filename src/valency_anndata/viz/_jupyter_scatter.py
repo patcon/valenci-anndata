@@ -46,21 +46,22 @@ def jscatter(
     ----------
 
     adata :
-        ...
+        An AnnData object with some projected representations stored in
+        [`.obsm`][anndata.AnnData.obsm].
     use_reps :
-        ...
+        Projected representations of the data stored in [`.obsm`][anndata.AnnData.obsm].
     color :
-        ...
+        Key in [`.obs`][anndata.AnnData.obs] for coloring projections.
     height :
-        ...
+        Height of the scatter widget in cell output.
     dark_mode :
-        ...
+        Whether to set the plot background dark.
 
     Returns
     -------
 
     scatter : JScatter
-        ...
+        A populated [`Scatter`](https://jupyter-scatter.dev/api#scatter) instance.
 
     Examples
     --------
