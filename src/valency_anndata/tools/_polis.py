@@ -165,7 +165,7 @@ def recipe_polis(
         adata,
         use_rep=key_added_pca,
         # Force kmeans to only run on first two principle components.
-        n_pcs=2,
+        # n_pcs=2,
         k_bounds=(2, 5),
         init="polis",
         mask_obs="cluster_mask",
