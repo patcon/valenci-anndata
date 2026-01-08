@@ -4,14 +4,12 @@ from anndata import AnnData
 from reddwarf.sklearn.cluster import BestPolisKMeans
 from typing import Literal, Optional, Tuple
 from scanpy.get import _check_mask
-from scanpy.tools._utils import _choose_representation
 from numpy.typing import NDArray
 
 
 def kmeans(
     adata: AnnData,
     use_rep: Optional[str] = None,
-    n_pcs: Optional[int] = None,
     k_bounds: Optional[Tuple[int, int]] = None,
     init: Literal["kmeans++", "random", "polis"] = "kmeans++",
     init_centers: Optional[np.ndarray] = None,
@@ -27,12 +25,6 @@ def kmeans(
     ----------
     adata :
         Input data. Must have `.X` as a numpy array.
-    use_rep
-        Representation to use for clustering. If ``None``, use ``'X_pca'`` if
-        present in ``adata.obsm``, otherwise fall back to ``adata.X``.
-    n_pcs
-        Number of dimensions to use from the selected representation. If given,
-        only the first ``n_pcs`` columns are used.
     k_bounds :
         Minimum and maximum number of clusters to try. Defaults to [2, 5].
     init :
@@ -56,10 +48,15 @@ def kmeans(
     AnnData or None
         Returns a copy if `inplace=False`, otherwise modifies in place.
     """
-    X = _choose_representation(adata, use_rep=use_rep, n_pcs=n_pcs)
+    if use_rep is None:
+        X = adata.X
+    else:
+        if use_rep not in adata.obsm:
+            raise KeyError(f"use_rep='{use_rep}' not found in adata.obsm")
+        X = adata.obsm[use_rep]
 
-    if not isinstance(X, np.ndarray):
-        raise ValueError("Selected representation must be a numpy array.")
+    if X is None:
+        raise ValueError("No data matrix found for clustering.")
 
     if k_bounds is None:
         k_bounds_list = [2, 5]
@@ -73,6 +70,9 @@ def kmeans(
         X_cluster = X[mask]
         if X_cluster.shape[0] == 0:
             raise ValueError("mask_obs excludes all observations.")
+
+    if not isinstance(X, np.ndarray):
+        raise ValueError("adata.X must be a numpy array.")
 
     best_kmeans = BestPolisKMeans(
         k_bounds=k_bounds_list,
@@ -96,26 +96,20 @@ def kmeans(
 
     labels = pd.Categorical(full_labels)
 
-    def _write_kmeans_result(adata_out: AnnData) -> None:
-        adata_out.obs[key_added] = labels
-
-        kmeans_params = dict(
-            k_bounds=k_bounds_list,
-            best_k=best_kmeans.best_k_,
-            best_score=best_kmeans.best_score_,
-            init=init,
-            random_state=random_state,
-            use_rep=use_rep,
-            n_pcs=n_pcs,
-        )
-
-        adata_out.uns[key_added] = {}
-        adata_out.uns[key_added]["params"] = kmeans_params
-
     if inplace:
-        _write_kmeans_result(adata)
+        adata.obs[key_added] = labels
+        adata.uns[key_added] = {
+            "best_k": best_kmeans.best_k_,
+            "best_score": best_kmeans.best_score_,
+            "init": init,
+        }
         return None
     else:
         adata_copy = adata.copy()
-        _write_kmeans_result(adata_copy)
+        adata_copy.obs[key_added] = labels
+        adata_copy.uns[key_added] = {
+            "best_k": best_kmeans.best_k_,
+            "best_score": best_kmeans.best_score_,
+            "init": init,
+        }
         return adata_copy
