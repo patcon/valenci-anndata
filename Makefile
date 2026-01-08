@@ -1,5 +1,5 @@
 notebook-docs:
-	IS_GENERATING_DOCS=true uv run jupyter nbconvert docs/notebooks/*.ipynb \
+	uv run jupyter nbconvert docs/notebooks/*.ipynb \
 		--execute \
 		--to markdown
 
