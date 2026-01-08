@@ -35,16 +35,14 @@ def _sparsity_aware_scaling(
     use_rep: str = "X_pca_masked_unscaled",
     key_added: str = "X_pca_masked_scaled",
 ) -> AnnData | None:
-    # NOTE: This calculates row sparsity based on zero'd out values
-    # (meta & moderated out). This feels strange, but is consistent
-    # with what Polis does.
-    X_sparse = adata.layers["X_masked"]
-
     # Preconditions
-    assert isinstance(X_sparse, np.ndarray)
+    assert isinstance(adata.X, np.ndarray)
+
+    scaling_factors = calculate_scaling_factors(adata.X)
+    X_pca_unscaled = adata.obsm[use_rep]
 
     # 4. Scale PCA using sparsity data
-    scaling_factors = calculate_scaling_factors(X_sparse)
+    scaling_factors = calculate_scaling_factors(adata.X)
     X_pca_unscaled = adata.obsm[use_rep]
     adata.obsm[key_added] = X_pca_unscaled / scaling_factors[:, None]
 
@@ -164,8 +162,6 @@ def recipe_polis(
     val.tools.kmeans(
         adata,
         use_rep=key_added_pca,
-        # Force kmeans to only run on first two principle components.
-        # n_pcs=2,
         k_bounds=(2, 5),
         init="polis",
         mask_obs="cluster_mask",
