@@ -27,6 +27,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
+          # Works on 3.10 locally, but pacmap seems to crash python kernel on
+          # CI. This happens when nbconvert is executing notebooks during its
+          # markdown conversion for docs website.
+          # TODO: Debug pacmap on github actions, and maybe submit PR upstream.
           python-version: "3.11"
 
       - name: Install uv
