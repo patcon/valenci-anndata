@@ -69,7 +69,7 @@ def recipe_polis(
 ):
     """
     Projects and clusters participants as of [[Small _et al._,
-    2021](http://dx.doi.org/10.6035/recerca.5516)]
+    2021](http://dx.doi.org/10.6035/recerca.5516)].
 
     Expects sparse vote matrix [`.X`][anndata.AnnData.X] with `{+1, 0, -1}`
     and `NaN` values.
