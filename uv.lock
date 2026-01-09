@@ -1379,10 +1379,10 @@ wheels = [
 
 [[package]]
 name = "ipywidgets"
-version = "7.7.5"
+version = "7.8.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "ipykernel" },
+    { name = "comm" },
     { name = "ipython", version = "8.38.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "ipython", version = "9.9.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "ipython-genutils" },
@@ -1390,9 +1390,9 @@ dependencies = [
     { name = "traitlets" },
     { name = "widgetsnbextension" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/03/e2/ba5c1bf9e16c2c942c5d7b085ecfc777e069af4a961f0531ad0bd60f02e1/ipywidgets-7.7.5.tar.gz", hash = "sha256:2392943ed30253c84ac36f23f707fa1c9d34461ae5356944481a84d5b08d69b2", size = 4076288, upload-time = "2023-03-28T14:58:42.645Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3b/93/69f9fbe1a9fdec370670a2ee49eee3f8fb3d40203653692954a774c4081b/ipywidgets-7.8.5.tar.gz", hash = "sha256:927439399d75f59f43864c13d7e73b05a4de522d3ea09d6048adc5c583b55c3b", size = 4075909, upload-time = "2024-10-22T08:18:27.2Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/34/65/e97c8528ce10091a7467fe82ade2d101270a233b9fb7324012ed0ebd0586/ipywidgets-7.7.5-py2.py3-none-any.whl", hash = "sha256:d9644e473282ca28a6bc0327372bcad7a41877d0092fea1ed70bd15f28be9270", size = 123892, upload-time = "2023-03-28T14:58:38.158Z" },
+    { url = "https://files.pythonhosted.org/packages/25/22/f48bd3af0ef7c72dce13f9930a4483acbc7c77373834700296495ea0875f/ipywidgets-7.8.5-py2.py3-none-any.whl", hash = "sha256:8055fe314edd4c101a5f1ea230620ef5e315b0ca87f940264b4eac1faf9746ef", size = 124086, upload-time = "2024-10-22T08:18:24.09Z" },
 ]
 
 [[package]]
@@ -4328,7 +4328,7 @@ requires-dist = [
     { name = "anndata", specifier = ">=0.11.4" },
     { name = "googletrans", specifier = ">=4.0.2" },
     { name = "huggingface-hub", specifier = ">=1.2.3" },
-    { name = "ipywidgets", specifier = "<7.8" },
+    { name = "ipywidgets", specifier = "<8" },
     { name = "jupyter-scatter", specifier = ">=0.22.2" },
     { name = "langevitour", git = "https://github.com/patcon/langevitour?rev=fix-js-indent" },
     { name = "llvmlite", marker = "platform_machine == 'x86_64' and sys_platform == 'darwin'", specifier = "<=0.45.1" },
