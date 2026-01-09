@@ -1,4 +1,3 @@
-import jscatter # noqa: F401
 from . import datasets, preprocessing, tools, viz
 from . import scanpy
 
