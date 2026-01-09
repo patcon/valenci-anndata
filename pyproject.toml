@@ -22,7 +22,9 @@ dependencies = [
     "red-dwarf",
     "svgwrite>=1.4.3",
     "pacmap>=0.8.0",
-    "ipywidgets>=8.1.8",
+    # Keep this <8.0 to keep jupyter-scatter compatible with Google Colab.
+    # Strangely, we can go higher, but only if jupyter-scatter is installed before valency-anndata.
+    "ipywidgets<8",
     "huggingface-hub>=1.2.3",
     "jupyter-scatter>=0.22.2",
 ]

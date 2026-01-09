@@ -84,22 +84,6 @@ def jscatter(
     ```
 
     <img src="../../assets/documentation-examples/viz--jscatter--single.png">
-
-    Warning
-    -------
-
-    In Google Colab, due to an outstanding bug, `jupyter-scatter` must be
-    imported before installing `valency-anndata`. We hope to resolve this soon.
-
-    ```py
-    %pip install jupyter-scatter
-    import jscatter
-
-    %pip install valency-anndata
-    import valency_anndata as val
-    ```
-       [okabeito]: https://cmap-docs.readthedocs.io/en/latest/catalog/qualitative/okabeito:okabeito/
-       [viridis]: https://cmap-docs.readthedocs.io/en/latest/catalog/sequential/bids:viridis/
     """
     background = "#1E1E20" if dark_mode else None
 
