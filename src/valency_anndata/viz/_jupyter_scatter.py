@@ -40,7 +40,10 @@ def jscatter(
     dark_mode: bool = True,
 ) -> JScatter:
     """
-    Interactive Jupyter-Scatter view over one or more embeddings.
+    Interactive Jupyter-Scatter view showing one or more embeddings.
+
+    A button is created for each projected representation, and clicking will
+    animate points into that projection.
 
     Parameters
     ----------
@@ -49,11 +52,16 @@ def jscatter(
         An AnnData object with some projected representations stored in
         [`.obsm`][anndata.AnnData.obsm].
     use_reps :
-        Projected representations of the data stored in [`.obsm`][anndata.AnnData.obsm].
+        One or more keys for projected representations of the data stored in
+        [`.obsm`][anndata.AnnData.obsm].
     color :
-        Key in [`.obs`][anndata.AnnData.obs] for coloring projections.
+        Key in [`.obs`][anndata.AnnData.obs] for coloring each participant.
+        Categorical values will use a discrete color map
+        ([`okabeito`](https://cmap-docs.readthedocs.io/en/latest/catalog/qualitative/okabeito:okabeito/)),
+        and anything else will use a continuous gradient
+        ([`viridis`](https://cmap-docs.readthedocs.io/en/latest/catalog/sequential/bids:viridis/)).
     height :
-        Height of the scatter widget in cell output.
+        Pixel height of the scatter widget in output cell.
     dark_mode :
         Whether to set the plot background dark.
 
@@ -67,9 +75,31 @@ def jscatter(
     --------
 
     ```py
-    scatter = val.viz.jscatter(adata, use_reps=["X_pca_polis", "X_pacmap"], color="kmeans_polis")
+    scatter = val.viz.jscatter(
+        adata,
+        use_reps=["X_pca_polis", "X_localmap"],
+        color="kmeans_polis",
+    )
     scatter.show()
     ```
+
+    <img src="../../assets/documentation-examples/viz--jscatter--single.png">
+
+    Warning
+    -------
+
+    In Google Colab, due to an outstanding bug, `jupyter-scatter` must be
+    imported before installing `valency-anndata`. We hope to resolve this soon.
+
+    ```py
+    %pip install jupyter-scatter
+    import jscatter
+
+    %pip install valency-anndata
+    import valency_anndata as val
+    ```
+       [okabeito]: https://cmap-docs.readthedocs.io/en/latest/catalog/qualitative/okabeito:okabeito/
+       [viridis]: https://cmap-docs.readthedocs.io/en/latest/catalog/sequential/bids:viridis/
     """
     background = "#1E1E20" if dark_mode else None
 
