@@ -85,6 +85,8 @@ def jscatter(
     Examples
     --------
 
+    Plotting multiple representations in one view, colored with discrete categorical values.
+
     ```py
     val.viz.jscatter(
         adata,
@@ -94,6 +96,19 @@ def jscatter(
     ```
 
     <img src="../../assets/documentation-examples/viz--jscatter--single.png">
+
+    Plotting mulitple `.obs` keys across multiple views, colored with continuous values.
+
+    ```py
+    val.viz.jscatter(
+        adata,
+        use_reps=["X_pca_polis", "X_pacmap"],
+        color=["n_votes", "pct_agree", "pct_pass", "pct_disagree"],
+        height=320,
+    )
+    ```
+
+    <img src="../../assets/documentation-examples/viz--jscatter--multi.png">
     """
     background = "#1E1E20" if dark_mode else None
 
