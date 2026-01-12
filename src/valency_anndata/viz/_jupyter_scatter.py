@@ -1,7 +1,7 @@
 import ipywidgets as widgets
 from IPython.display import display
-from jscatter import Scatter as JScatter
-from typing import Sequence, Tuple, Iterable
+from jscatter import Scatter as JScatter, compose
+from typing import Optional, Sequence, Tuple, Iterable
 import pandas as pd
 from anndata import AnnData
 
@@ -35,15 +35,20 @@ def obsm_to_df(
 def jscatter(
     adata: AnnData,
     use_reps: list[str] = [],
-    color: str | None = None,
+    color: str | Iterable[str] | None = None,
     height: int = 640,
     dark_mode: bool = True,
-) -> JScatter:
+    nrows: Optional[int] = None,
+    ncols: Optional[int] = None,
+    return_objs: bool = False,
+) -> list[JScatter] | None:
     """
     Interactive Jupyter-Scatter view showing one or more embeddings.
 
     A button is created for each projected representation, and clicking will
     animate points into that projection.
+
+    Passing multiple color keys will display mulitple linked views.
 
     Parameters
     ----------
@@ -55,7 +60,7 @@ def jscatter(
         One or more keys for projected representations of the data stored in
         [`.obsm`][anndata.AnnData.obsm].
     color :
-        Key in [`.obs`][anndata.AnnData.obs] for coloring each participant.
+        One or more keys in [`.obs`][anndata.AnnData.obs] for coloring each participant.
         Categorical values will use a discrete color map
         ([`okabeito`](https://cmap-docs.readthedocs.io/en/latest/catalog/qualitative/okabeito:okabeito/)),
         and anything else will use a continuous gradient
@@ -64,26 +69,46 @@ def jscatter(
         Pixel height of the scatter widget in output cell.
     dark_mode :
         Whether to set the plot background dark.
+    nrows :
+        Number of rows to display the scatter plots in.
+    ncols :
+        Number of columns to display the scatter plots in.
+    return_objs :
+        Whether to return the Scatter object(s).
 
     Returns
     -------
 
-    scatter : JScatter
-        A populated [`Scatter`](https://jupyter-scatter.dev/api#scatter) instance.
+    scatters :
+        A list of [`Scatter`](https://jupyter-scatter.dev/api#scatter) instances.
 
     Examples
     --------
 
+    Plotting multiple representations in one view, colored with discrete categorical values.
+
     ```py
-    scatter = val.viz.jscatter(
+    val.viz.jscatter(
         adata,
         use_reps=["X_pca_polis", "X_localmap"],
         color="kmeans_polis",
     )
-    scatter.show()
     ```
 
     <img src="../../assets/documentation-examples/viz--jscatter--single.png">
+
+    Plotting mulitple `.obs` keys across multiple views, colored with continuous values.
+
+    ```py
+    val.viz.jscatter(
+        adata,
+        use_reps=["X_pca_polis", "X_pacmap"],
+        color=["n_votes", "pct_agree", "pct_pass", "pct_disagree"],
+        height=320,
+    )
+    ```
+
+    <img src="../../assets/documentation-examples/viz--jscatter--multi.png">
     """
     background = "#1E1E20" if dark_mode else None
 
@@ -93,7 +118,14 @@ def jscatter(
         for key in use_reps
     ]
 
-    obs_cols = [color] if color is not None else None
+    if color is None:
+        colors = []
+    elif isinstance(color, str):
+        colors = [color]
+    else:
+        colors = list(color)
+
+    obs_cols = colors if colors else None
 
     df = obsm_to_df(
         adata,
@@ -101,20 +133,26 @@ def jscatter(
         obs_cols=obs_cols,
     )
 
-    # ---- create scatter ----
+    # ---- create scatter(s) ----
     default_prefix = projections[0][1]
 
-    scatter = JScatter(
-        data=df,
-        x=f"{default_prefix}1",
-        y=f"{default_prefix}2",
-        height=height,
-    )
+    scatters = []
 
-    if color is not None:
-        scatter.color(by=color)
+    for c in colors or [None]:
+        scatter = JScatter(
+            data=df,
+            x=f"{default_prefix}1",
+            y=f"{default_prefix}2",
+            height=height,
+            zoom_on_selection=True,
+        )
 
-    scatter.background(background)
+        if c is not None:
+            scatter.color(by=c)
+
+        scatter.background(background)
+
+        scatters.append(scatter)
 
     # ---- projection toggle ----
     toggle = widgets.ToggleButtons(
@@ -128,10 +166,22 @@ def jscatter(
 
     def on_toggle(change):
         prefix = change["new"]
-        scatter.xy(f"{prefix}1", f"{prefix}2")
+        for s in scatters:
+            s.xy(f"{prefix}1", f"{prefix}2")
 
     toggle.observe(on_toggle, names="value")
 
-    display(toggle)
+    grid = compose(
+        list(zip(scatters, colors)),
+        sync_view=True,
+        sync_selection=True,
+        sync_hover=True,
+        cols=ncols,
+        rows=nrows,
+        row_height=height,
+    )
 
-    return scatter
+    display(toggle)
+    display(grid)
+
+    return scatters if return_objs else None
