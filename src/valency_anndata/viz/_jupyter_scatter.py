@@ -43,7 +43,7 @@ def jscatter(
     return_objs: bool = False,
 ) -> list[JScatter] | None:
     """
-    Interactive Jupyter-Scatter view showing one or more embeddings.
+    Interactive Jupyter-Scatter view showing one or more embeddings. [[Lekschas _et al._, 2024](https://doi.org/10.21105/joss.07059)]
 
     A button is created for each projected representation, and clicking will
     animate points into that projection.

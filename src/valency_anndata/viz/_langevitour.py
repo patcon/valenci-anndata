@@ -18,7 +18,7 @@ def langevitour(
     **kwargs,
 ):
     """
-    Interactive Langevitour visualization over one or more representations.
+    Interactive Langevitour visualization over one or more representations. [[Harrison, 2022](https://doi.org/10.32614/RJ-2023-046)]
 
     Parameters
     ----------
