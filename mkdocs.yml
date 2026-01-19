@@ -35,6 +35,7 @@ theme:
 nav:
   - Welcome: index.md
   - installation.md
+  - usage-principles.md
   - Tutorials:
     - Basic Polis Pipeline: tutorials/basic-polis.md
     - Large Conversation: tutorials/aufstehen.md
