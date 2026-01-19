@@ -5,6 +5,7 @@ from scanpy.tools._leiden import leiden
 from ._kmeans import kmeans
 from ._pacmap import pacmap, localmap
 from ._polis import recipe_polis
+from ._polis2 import recipe_polis2_statements
 
 
 __all__ = [
@@ -12,6 +13,7 @@ __all__ = [
     "localmap",
     "pacmap",
     "recipe_polis",
+    "recipe_polis2_statements",
 
     # Simple re-export of scanpy.
     "pca",
