@@ -40,7 +40,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync
+          uv sync --extra dev
 
       - name: Build notebook-derived docs
         continue-on-error: true
