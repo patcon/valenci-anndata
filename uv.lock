@@ -4339,7 +4339,7 @@ dev = [
 requires-dist = [
     { name = "anndata", specifier = ">=0.11.4" },
     { name = "googletrans", specifier = ">=4.0.2" },
-    { name = "huggingface-hub", specifier = ">=1.2.3" },
+    { name = "huggingface-hub" },
     { name = "ipywidgets", specifier = "<8" },
     { name = "jupyter-scatter", specifier = ">=0.22.2" },
     { name = "langevitour", git = "https://github.com/patcon/langevitour?rev=fix-js-indent" },
