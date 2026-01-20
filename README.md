@@ -9,7 +9,7 @@ Experimental tooling to support notebook analysis of polislike data.
 ## Installation
 
 ```
-pip install git+https://github.com/patcon/valency-anndata
+pip install valency-anndata
 ```
 
 ## Usage
