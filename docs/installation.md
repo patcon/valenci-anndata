@@ -3,12 +3,8 @@
 For now, installation is a bit inelegant:
 
 ```python
-pip install \
-    git+https://github.com/patcon/valency-anndata \
-    git+https://github.com/patcon/polis-client \ # (1)!
+pip install git+https://github.com/patcon/valency-anndata
 ```
-
-1. [`polis-client`](https://github.com/patcon/polis-client) is an HTTP client library used to load data from Polis instance APIs.
 
 Once we make a full release and settle the versions of our dependant libraries, installation will be simply `pip install valency-anndata`!
 

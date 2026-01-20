@@ -2821,11 +2821,15 @@ wheels = [
 
 [[package]]
 name = "polis-client"
-version = "0.1.0"
-source = { git = "https://github.com/patcon/polis-client#3e0279c3c845e530d138b1787115ed13526e36ba" }
+version = "0.1.2"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "httpx" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/80/2e/2f5143ce3078cc9dfbde14f53743445bee1717a3043e654d8246f63be80c/polis_client-0.1.2.tar.gz", hash = "sha256:0cd2f7332b084ef283a6bd5dde8de54eb87903dc05bdc2ebe3cf8cc8ef2b81bf", size = 216016, upload-time = "2026-01-20T06:38:43.789Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/38/b4/1c0e5056d94cdd3f853074c068bf937c2e94d628a7c4a39f2fb9118a4d74/polis_client-0.1.2-py3-none-any.whl", hash = "sha256:959c34918dff1260c9813254d7f8e130e2c83674f2d3d7904e228ecb647432a0", size = 64347, upload-time = "2026-01-20T06:38:42.82Z" },
 ]
 
 [[package]]
@@ -4342,7 +4346,7 @@ requires-dist = [
     { name = "llvmlite", marker = "platform_machine == 'x86_64' and sys_platform == 'darwin'", specifier = "<=0.45.1" },
     { name = "nest-asyncio", specifier = ">=1.6.0" },
     { name = "pacmap", specifier = ">=0.8.0" },
-    { name = "polis-client", git = "https://github.com/patcon/polis-client" },
+    { name = "polis-client", specifier = ">=0.1.2" },
     { name = "red-dwarf", specifier = "~=0.4.0" },
     { name = "scanpy", extras = ["leiden"] },
     { name = "setuptools", specifier = "<81" },
