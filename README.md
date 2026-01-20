@@ -1,4 +1,4 @@
-![diagram of one workflow of valencyann-data](docs/assets/valency-anndata-flow.alpha.logo.png)
+![diagram of one workflow of valencyann-data](https://raw.githubusercontent.com/patcon/valency-anndata/main/docs/assets/valency-anndata-flow.alpha.logo.png)
 
 # valency-anndata
 
