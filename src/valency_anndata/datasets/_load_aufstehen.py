@@ -33,7 +33,12 @@ def aufstehen(
     more information about how the data was collected can be found at the
     following link: <https://pol.is/report/r6xd526vyjyjrj9navxrj>
     """
-    export_dir = snapshot_download(repo_id="patcon/polis-aufstehen-2018", repo_type="dataset")
+    export_dir = snapshot_download(
+        repo_id="patcon/polis-aufstehen-2018",
+        repo_type="dataset",
+        # Suppress HF_TOKEN warning.
+        token=False,
+    )
     adata = val.datasets.polis.load(source=export_dir, translate_to=translate_to)
 
     return adata
