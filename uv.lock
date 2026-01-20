@@ -3396,8 +3396,8 @@ wheels = [
 
 [[package]]
 name = "red-dwarf"
-version = "0.3.0"
-source = { git = "https://github.com/polis-community/red-dwarf?rev=algo-registries#455e05b9c3e3ee4f2589805975f03eb0b3268e00" }
+version = "0.4.0"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "fake-useragent" },
     { name = "pandas" },
@@ -3407,6 +3407,10 @@ dependencies = [
     { name = "requests-ratelimiter" },
     { name = "scikit-learn", version = "1.7.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "scikit-learn", version = "1.8.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/3f/b7/cd6609d8cc712809c5d9dbef3f7bcd797cd9b479ce84a71c11654cbf9634/red_dwarf-0.4.0.tar.gz", hash = "sha256:92f5d0120cb8dd758890246fbb8497bc559663333f1aaf9e871bff0cc9ea163e", size = 49558, upload-time = "2026-01-20T05:51:26.995Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d1/ca/1611e38e619cc8f4fffa7a0e90c84971810e9066d94d3c7019e96657eef2/red_dwarf-0.4.0-py3-none-any.whl", hash = "sha256:2b002bbb8b3f9b5864532a62860b1d76b307b6b8905cea1ab11f0a9c25154bb3", size = 51963, upload-time = "2026-01-20T05:51:25.824Z" },
 ]
 
 [[package]]
@@ -3440,8 +3444,8 @@ wheels = [
 
 [[package]]
 name = "requests-cache"
-version = "1.3.0"
-source = { git = "https://github.com/requests-cache/requests-cache?rev=12af54ded36#12af54ded36322a681c562c09ec75cd2d4c2573c" }
+version = "1.2.1"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "cattrs" },
@@ -3449,6 +3453,10 @@ dependencies = [
     { name = "requests" },
     { name = "url-normalize" },
     { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1a/be/7b2a95a9e7a7c3e774e43d067c51244e61dea8b120ae2deff7089a93fb2b/requests_cache-1.2.1.tar.gz", hash = "sha256:68abc986fdc5b8d0911318fbb5f7c80eebcd4d01bfacc6685ecf8876052511d1", size = 3018209, upload-time = "2024-06-18T17:18:03.774Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4e/2e/8f4051119f460cfc786aa91f212165bb6e643283b533db572d7b33952bd2/requests_cache-1.2.1-py3-none-any.whl", hash = "sha256:1285151cddf5331067baa82598afe2d47c7495a1334bfe7a7d329b43e9fd3603", size = 61425, upload-time = "2024-06-18T17:17:45Z" },
 ]
 
 [[package]]
@@ -4335,7 +4343,7 @@ requires-dist = [
     { name = "nest-asyncio", specifier = ">=1.6.0" },
     { name = "pacmap", specifier = ">=0.8.0" },
     { name = "polis-client", git = "https://github.com/patcon/polis-client" },
-    { name = "red-dwarf", git = "https://github.com/polis-community/red-dwarf?rev=algo-registries" },
+    { name = "red-dwarf", specifier = "~=0.4.0" },
     { name = "scanpy", extras = ["leiden"] },
     { name = "setuptools", specifier = "<81" },
     { name = "svgwrite", specifier = ">=1.4.3" },
