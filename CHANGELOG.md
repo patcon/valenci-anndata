@@ -4,6 +4,11 @@
 
 _No changes yet._
 
+## [0.1.1][] (2026-01-20)
+
+### Fixes
+- Fixed the README image so not broken on PyPI.
+
 ## [0.1.0][] (2026-01-19)
 
 Initial release includes:
