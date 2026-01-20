@@ -11,7 +11,7 @@ dependencies = [
     "anndata>=0.11.4",
     "googletrans>=4.0.2",
     "nest-asyncio>=1.6.0",
-    "polis-client",
+    "polis-client>=0.1.2",
     "scanpy[leiden]",
     # Intel macOS only (no usable wheels for pre Apple M1)
     # See: https://github.com/numba/llvmlite/issues/1357#issuecomment-3516587016
@@ -25,7 +25,7 @@ dependencies = [
     # Keep this <8.0 to keep jupyter-scatter compatible with Google Colab.
     # Strangely, we can go higher, but only if jupyter-scatter is installed before valency-anndata.
     "ipywidgets<8",
-    "huggingface-hub>=1.2.3",
+    "huggingface-hub",
     "jupyter-scatter>=0.22.2",
 ]
 
@@ -34,7 +34,6 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.uv.sources]
-polis-client = { git = "https://github.com/patcon/polis-client" }
 # Temporary fork (for website build only), until this gets merged:
 # See: https://github.com/pfh/langevitour/pull/9
 langevitour = { git = "https://github.com/patcon/langevitour", rev = "fix-js-indent" }
